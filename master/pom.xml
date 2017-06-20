@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright ... -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.etudes.apps</groupId>
+	<artifactId>master</artifactId>
+	<version>latest</version>
+
+	<packaging>pom</packaging>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>io.dropwizard</groupId>
+				<artifactId>dropwizard-core</artifactId>
+				<version>${dropwizard.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.dropwizard</groupId>
+				<artifactId>dropwizard-assets</artifactId>
+				<version>${dropwizard.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.dropwizard</groupId>
+				<artifactId>dropwizard-jdbi</artifactId>
+				<version>${dropwizard.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.dropwizard</groupId>
+				<artifactId>dropwizard-hibernate</artifactId>
+				<version>${dropwizard.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.dropwizard</groupId>
+				<artifactId>dropwizard-testing</artifactId>
+				<version>${dropwizard.version}</version>
+				<!-- <scope>test</scope> -->
+			</dependency>
+
+			<dependency>
+				<groupId>org.mockito</groupId>
+				<artifactId>mockito-core</artifactId>
+				<version>${mockito-core.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.h2database</groupId>
+				<artifactId>h2</artifactId>
+				<version>${h2.version}</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>javax.activation</groupId>
+				<artifactId>activation</artifactId>
+				<version>${javax.activation.version}</version>
+			</dependency>
+
+			<!-- <dependency> -->
+			<!-- <groupId>javax.mail</groupId> -->
+			<!-- <artifactId>javax.mail-api</artifactId> -->
+			<!-- <version>${javax.mail.version}</version> -->
+			<!-- </dependency> -->
+
+			<dependency>
+				<groupId>com.sun.mail</groupId>
+				<artifactId>javax.mail</artifactId>
+				<version>${javax.mail.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>commons-codec</groupId>
+				<artifactId>commons-codec</artifactId>
+				<version>${commons.codec.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons.lang.3.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.pdfbox</groupId>
+				<artifactId>pdfbox</artifactId>
+				<version>${pdfbox.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.etudes.apps</groupId>
+				<artifactId>assets</artifactId>
+				<version>latest</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.etudes.apps</groupId>
+				<artifactId>authentication</artifactId>
+				<version>latest</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.etudes.apps</groupId>
+				<artifactId>db</artifactId>
+				<version>latest</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.etudes.apps</groupId>
+				<artifactId>dispatcher</artifactId>
+				<version>latest</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.etudes.apps</groupId>
+				<artifactId>framework</artifactId>
+				<version>latest</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.etudes.apps</groupId>
+				<artifactId>lti</artifactId>
+				<version>latest</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.etudes.apps</groupId>
+				<artifactId>mneme</artifactId>
+				<version>latest</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.etudes.apps</groupId>
+				<artifactId>user</artifactId>
+				<version>latest</version>
+			</dependency>
+
+			<dependency>
+				<groupId>mysql</groupId>
+				<artifactId>mysql-connector-java</artifactId>
+				<version>${mysql.connector.version}</version>
+				<scope>runtime</scope>
+			</dependency>
+
+			<!-- https://github.com/gpedro/slack-webhook -->
+			<dependency>
+				<groupId>net.gpedro.integrations.slack</groupId>
+				<artifactId>slack-webhook</artifactId>
+				<version>${slack-webhook.version}</version>
+			</dependency>
+
+			<!-- https://github.com/FasterXML/jackson-datatype-jdk8 -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-jdk8</artifactId>
+				<version>${jackson-datatype-jdk8}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk</artifactId>
+				<version>${amazonaws.version}</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.dropwizard</groupId>
+			<artifactId>dropwizard-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.dropwizard</groupId>
+			<artifactId>dropwizard-assets</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.dropwizard</groupId>
+			<artifactId>dropwizard-jdbi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.dropwizard</groupId>
+			<artifactId>dropwizard-hibernate</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.dropwizard</groupId>
+			<artifactId>dropwizard-testing</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>com.jamierf.dropwizard</groupId> -->
+		<!-- <artifactId>dropwizard-logging-loggly</artifactId> -->
+		<!-- </dependency> -->
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.10</version>
+				<configuration>
+					<additionalProjectnatures>
+						<projectnature>
+							org.eclipse.jdt.core.javanature
+						</projectnature>
+						<projectnature>
+							org.eclipse.wst.jsdt.core.jsNature
+						</projectnature>
+						<projectnature>
+							org.eclipse.m2e.core.maven2Nature
+						</projectnature>
+					</additionalProjectnatures>
+					<buildcommands>
+						<buildcommand>
+							org.eclipse.jdt.core.javabuilder
+						</buildcommand>
+						<buildcommand>
+							org.eclipse.wst.jsdt.core.javascriptValidator
+						</buildcommand>
+						<buildCommand>
+							<name>org.eclipse.m2e.core.maven2Builder</name>
+						</buildCommand>
+					</buildcommands>
+				</configuration>
+			</plugin>
+			<plugin>
+				<inherited>true</inherited>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5</version>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<repositories>
+		<repository>
+			<id>default</id>
+			<name>Maven Repository Switchboard</name>
+			<layout>default</layout>
+			<url>http://repo1.maven.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jdk.version>1.8</jdk.version>
+		<lombok.version>1.16.16</lombok.version>
+		<mockito-core.version>2.7.21</mockito-core.version>
+		<junit.version>4.12</junit.version>
+		<dropwizard.version>1.1.0</dropwizard.version>
+		<javax.mail.version>1.5.6</javax.mail.version>
+		<javax.activation.version>1.1.1</javax.activation.version>
+		<h2.version>1.4.194</h2.version>
+		<mysql.connector.version>5.1.41</mysql.connector.version>
+		<commons.codec.version>1.10</commons.codec.version>
+		<commons.lang.3.version>3.5</commons.lang.3.version>
+		<slack-webhook.version>1.2.1</slack-webhook.version>
+		<jackson-datatype-jdk8>2.8.7</jackson-datatype-jdk8>
+		<pdfbox.version>2.0.5</pdfbox.version>
+		<amazonaws.version>1.11.113</amazonaws.version>
+	</properties>
+
+</project>

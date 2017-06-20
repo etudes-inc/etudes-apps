@@ -1,0 +1,98 @@
+# Copyright ...
+
+autoDDL: true
+
+# http://www.dropwizard.io/1.1.0/dropwizard-db/apidocs/io/dropwizard/db/DataSourceFactory.html
+database:
+  # the name of your JDBC driver
+  driverClass: com.mysql.jdbc.Driver
+
+  # the username
+  user: mneme
+
+  # the password
+  password: mneme
+
+  # the JDBC URL
+  url: jdbc:mysql://localhost:3306/mneme
+
+  # any properties specific to your JDBC driver:
+  properties:
+    charSet: UTF-8
+
+  # the maximum amount of time to wait on an empty pool before throwing an exception
+  maxWaitForConnection: 1s
+
+  # the SQL query to run when validating a connection's liveness
+  validationQuery: "/* Validate Connection */ SELECT 1"
+
+  # the timeout before a connection validation query fail
+  validationQueryTimeout: 3s
+
+  # minimum time from last validation or use of a connection for validation
+  validationInterval: 30s
+
+  # when to validate pool db connections
+  checkConnectionWhileIdle: false
+  checkConnectionOnBorrow: true
+  checkConnectionOnConnect: false
+  checkConnectionOnReturn: false
+
+  # The initial size of the connection pool.
+  initialSize: 8
+
+  # the minimum number of connections to keep open
+  minSize: 8
+
+  # the maximum number of connections to keep open
+  maxSize: 32
+
+  # the amount of time to sleep between runs of the idle connection validation, abandoned cleaner and idle pool resizing
+  evictionInterval: 10s
+
+  # the minimum amount of time an connection must sit idle in the pool before it is eligible for eviction
+  minIdleTime: 1 minute
+
+  # Set to true if you want the connection pool to commit any pending transaction when a connection is returned
+  commitOnReturn: false
+
+  # The default auto-commit state of the connections - set to force OFF auto-commit
+  autoCommitByDefault: true
+
+  # The default transaction isolation to use for the connections. Can be one of none, default, read-uncommitted, read-committed, repeatable-read, or serializable.
+  defaultTransactionIsolation: repeatable-read
+
+server:
+  adminContextPath: /admin
+  applicationContextPath: /
+  rootPath: /api
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081
+
+# Logging settings.
+logging:
+
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
+
+  # Logger-specific levels.
+  loggers:
+
+    # Sets the level for 'com.example.app' to DEBUG.
+    mneme: INFO
+    dw: INFO
+    org.eclipse.jetty: INFO
+    io.dropwizard: INFO
+
+# Logback's Time Based Rolling Policy - archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}.log.gz
+# Logback's Size and Time Based Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}-%i.log.gz
+# Logback's Fixed Window Rolling Policy -  archivedLogFilenamePattern: /tmp/application-%i.log.gz
+
+  appenders:
+    - type: console
+      logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
+      timeZone: UTC

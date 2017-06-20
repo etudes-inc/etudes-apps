@@ -1,0 +1,13 @@
+.DS_Store
+target
+.classpath
+.project
+.settings
+dependency-reduced-pom.xml
+/node_modules
+assets/src/main/resources/assets/asset-manifest.json
+assets/src/main/resources/assets/favicon.ico
+assets/src/main/resources/assets/index.html
+assets/src/main/resources/assets/manifest.json
+assets/src/main/resources/assets/service-worker.js
+assets/src/main/resources/assets/static/
