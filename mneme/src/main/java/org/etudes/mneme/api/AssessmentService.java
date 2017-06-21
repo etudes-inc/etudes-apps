@@ -27,10 +27,12 @@ import java.util.List;
 import java.util.zip.ZipOutputStream;
 
 import org.etudes.apps.user.model.User;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * AssessmentService manages assessments (tests, surveys, assignments, etc).
  */
+@Contract
 public interface AssessmentService {
 	/**
 	 * Sort options for getContextAssessments()
