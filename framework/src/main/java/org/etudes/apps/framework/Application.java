@@ -32,7 +32,7 @@ import org.etudes.apps.user.UserService;
 import org.etudes.apps.user.data.UserData;
 import org.etudes.apps.user.impl.UserDataJDBIImpl;
 import org.etudes.apps.user.impl.UserServiceImpl;
-import org.etudes.mneme.api.MnemeAPI;
+import org.etudes.mneme.wapi.MnemeAPI;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.servlet.ServletContainer;

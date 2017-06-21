@@ -16,7 +16,7 @@
  *
  **********************************************************************************/
 
-package org.etudes.mneme.api;
+package org.etudes.mneme.wapi;
 
 import java.util.ArrayList;
 import java.util.Date;
