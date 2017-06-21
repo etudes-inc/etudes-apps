@@ -139,7 +139,7 @@
 									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>mneme.framework.Application</mainClass>
+									<mainClass>org.etudes.apps.framework.Application</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>

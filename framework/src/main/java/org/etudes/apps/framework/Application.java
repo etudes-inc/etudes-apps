@@ -96,8 +96,8 @@ public class Application extends io.dropwizard.Application<Configuration> {
 
 		// serve our static assets from /, serving "index.html" as the default
 		// all possible route starting points needs to be listed
-		bootstrap.addBundle(new AssetsBundle("/mneme/", "/Masmts", "index.html", "Masmts"));
-		bootstrap.addBundle(new AssetsBundle("/mneme/", "/", "index.html", "root"));
+		bootstrap.addBundle(new AssetsBundle("/mneme/", "/Asmts", "index.html", "MnemeAsmts"));
+		bootstrap.addBundle(new AssetsBundle("/mneme/", "/", "index.html", "MnemeRoot"));
 	}
 
 	@Override

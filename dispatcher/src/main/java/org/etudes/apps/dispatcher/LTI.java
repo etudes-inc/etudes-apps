@@ -186,7 +186,7 @@ public class LTI {
 		String productUrl = "/";
 
 		// select a starting route for the user role
-		String route = "Masmts";
+		String route = "Asmts";
 
 		// use the authentication id as the token
 		Long token = auth.get().get_id();
