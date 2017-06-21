@@ -103,6 +103,13 @@
 				<version>${commons.lang.3.version}</version>
 			</dependency>
 
+			<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
+			<dependency>
+				<groupId>commons-fileupload</groupId>
+				<artifactId>commons-fileupload</artifactId>
+				<version>${commons.fileupload.version}</version>
+			</dependency>
+
 			<dependency>
 				<groupId>org.apache.pdfbox</groupId>
 				<artifactId>pdfbox</artifactId>
@@ -295,6 +302,7 @@
 		<mysql.connector.version>5.1.41</mysql.connector.version>
 		<commons.codec.version>1.10</commons.codec.version>
 		<commons.lang.3.version>3.5</commons.lang.3.version>
+		<commons.fileupload.version>1.3.3</commons.fileupload.version>
 		<slack-webhook.version>1.2.1</slack-webhook.version>
 		<jackson-datatype-jdk8>2.8.7</jackson-datatype-jdk8>
 		<pdfbox.version>2.0.5</pdfbox.version>
