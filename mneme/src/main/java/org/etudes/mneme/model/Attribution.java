@@ -1,10 +1,7 @@
 /**********************************************************************************
  *
- * Copyright (c) 2008, 2017 Etudes, Inc.
+ * Copyright (c) 2017 Etudes, Inc.
  * 
- * Portions completed before September 1, 2008
- * Copyright (c) 2007, 2008 The Regents of the University of Michigan & Foothill College, ETUDES Project
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,26 +16,32 @@
  *
  **********************************************************************************/
 
-package org.etudes.mneme.api;
+package org.etudes.mneme.model;
+
+import java.util.Date;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * Something that tracks changes.
+ * Attribution holds a user id and a date, and is used to attribute something to someone and somewhen.
  */
-public interface Changeable {
-	/**
-	 * Clear the changed flag.
-	 */
-	void clearChanged();
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Attribution {
+	protected Date date = null;
+	protected String userId = null;
 
 	/**
-	 * Check if changed.
+	 * Set as a copy of another.
 	 * 
-	 * @return TRUE if changed, FALSE if not.
+	 * @param other
+	 *            The other to copy.
 	 */
-	Boolean getChanged();
-
-	/**
-	 * Set that the object has been changed.
-	 */
-	void setChanged();
+	protected void set(Attribution other) {
+		this.date = other.date;
+		this.userId = other.userId;
+	}
 }

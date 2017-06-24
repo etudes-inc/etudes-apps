@@ -1,10 +1,7 @@
 /**********************************************************************************
  *
- * Copyright (c) 2008, 2017 Etudes, Inc.
+ * Copyright (c) 2017 Etudes, Inc.
  * 
- * Portions completed before September 1, 2008
- * Copyright (c) 2007, 2008 The Regents of the University of Michigan & Foothill College, ETUDES Project
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,41 +16,40 @@
  *
  **********************************************************************************/
 
-package org.etudes.mneme.api;
+package org.etudes.mneme.model;
 
-import java.util.Date;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * Attribution holds a user id and a date, and is used to attribute something to someone and somewhen.
+ * Changeable tracks changes for an object.
  */
-public interface Attribution {
-	/**
-	 * Access the date.
-	 * 
-	 * @return The date.
-	 */
-	Date getDate();
+@Data
+@NoArgsConstructor
+public class Changeable {
+	protected boolean changed = false;
 
 	/**
-	 * Access user.
+	 * Construct from another.
 	 * 
-	 * @return The user id.
+	 * @param other
+	 *            The other to copy.
 	 */
-	String getUserId();
+	public Changeable(Changeable other) {
+		this.changed = other.isChanged();
+	}
 
 	/**
-	 * Set the date.
-	 * 
-	 * @param date
-	 *            The date.
+	 * Clear the changed state.
 	 */
-	void setDate(Date date);
+	public void clearChanged() {
+		this.changed = false;
+	}
 
 	/**
-	 * Set the user id.
-	 * 
-	 * @param userId
-	 *            The user id. Must be <= 99 characters long.
+	 * Set the changed state.
 	 */
-	void setUserId(String userId);
+	public void setChanged() {
+		this.changed = true;
+	}
 }
