@@ -19,7 +19,7 @@
 package org.etudes.mneme.api;
 
 /**
- * TODO: placeholder for the Sakai entity reference object
+ * TODO: placeholder for the Sakai entity reference object, for things like attachments
  */
 public interface Reference {
 }

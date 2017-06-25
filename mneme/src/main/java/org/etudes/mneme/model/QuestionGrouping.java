@@ -1,6 +1,6 @@
 /**********************************************************************************
  *
- * Copyright (c) 2008, 2014, 2017 Etudes, Inc.
+ * Copyright (c) 2008, 2017 Etudes, Inc.
  * 
  * Portions completed before September 1, 2008
  * Copyright (c) 2007, 2008 The Regents of the University of Michigan & Foothill College, ETUDES Project
@@ -19,21 +19,11 @@
  *
  **********************************************************************************/
 
-package org.etudes.mneme.api;
+package org.etudes.mneme.model;
 
 /**
- * AssessmentType enumerates the different assessment types.
+ * QuestionGrouping enumerates the different options for grouping questions for display at delivery.
  */
-public enum AssessmentType {
-	assignment(1), offline(3), survey(2), test(0);
-
-	private final int sortOrder;
-
-	private AssessmentType(int sortOrder) {
-		this.sortOrder = Integer.valueOf(sortOrder);
-	}
-
-	public Integer getSortValue() {
-		return sortOrder;
-	}
+public enum QuestionGrouping {
+	question, part, assessment
 }

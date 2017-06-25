@@ -19,7 +19,7 @@
  *
  **********************************************************************************/
 
-package org.etudes.mneme.api;
+package org.etudes.mneme.model;
 
 /**
  * ReviewShowCorrect enumerates an assessment's review options for showing currect answer / answer key

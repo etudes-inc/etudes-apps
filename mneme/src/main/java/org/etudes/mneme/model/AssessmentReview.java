@@ -20,9 +20,6 @@ package org.etudes.mneme.model;
 
 import java.util.Date;
 
-import org.etudes.mneme.api.ReviewShowCorrect;
-import org.etudes.mneme.api.ReviewTiming;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

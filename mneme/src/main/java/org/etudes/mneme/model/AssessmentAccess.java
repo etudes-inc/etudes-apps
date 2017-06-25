@@ -52,11 +52,10 @@ public class AssessmentAccess {
 	protected Date open = null;
 	protected boolean openOverride = false;
 
-	protected Changeable owner = null;
 	/** Overridden password. */
 	protected AssessmentPassword password = new AssessmentPassword();
-
 	protected boolean passwordOverride = false;
+
 	/** Overridden time limit. */
 	protected Long timeLimit = null;
 
@@ -202,7 +201,7 @@ public class AssessmentAccess {
 	/**
 	 * @return if there are no users, or if the users are no longer in the site.
 	 */
-	public boolean isEffectiveUsersEmpty() {
+	public boolean isEmpty() {
 		// TODO: big time!
 		// if (this.userIds.size() == 0)
 		// return Boolean.TRUE;
@@ -233,27 +232,6 @@ public class AssessmentAccess {
 	}
 
 	/**
-	 * @base The base assessment dates.
-	 * @return validity
-	 */
-	public boolean isEffectiveValid(AssessmentDates base) {
-
-		// TODO: must also be valid against the base assessment dates as currently defined
-
-		// open, if defined, must be before acceptUntil and due, if defined
-		if ((getOpen() != null) && (getDue() != null) && (!getOpen().before(getDue())))
-			return false;
-		if ((getOpen() != null) && (getAcceptUntil() != null) && (!getOpen().before(getAcceptUntil())))
-			return false;
-
-		// due, if defined, must be not after acceptUntil, if defined
-		if ((getDue() != null) && (getAcceptUntil() != null) && (getDue().after(getAcceptUntil())))
-			return false;
-
-		return true;
-	}
-
-	/**
 	 * @param userId
 	 *            The id of the user to check.
 	 * @return if the access applies to this user.
@@ -269,6 +247,27 @@ public class AssessmentAccess {
 	 */
 	public boolean isSameId(AssessmentAccess other) {
 		return this.getId().equals(other.getId());
+	}
+
+	/**
+	 * @base The base assessment dates.
+	 * @return validity
+	 */
+	public boolean isValid(AssessmentDates base) {
+
+		// TODO: must also be valid against the base assessment dates as currently defined
+
+		// open, if defined, must be before acceptUntil and due, if defined
+		if ((getOpen() != null) && (getDue() != null) && (!getOpen().before(getDue())))
+			return false;
+		if ((getOpen() != null) && (getAcceptUntil() != null) && (!getOpen().before(getAcceptUntil())))
+			return false;
+
+		// due, if defined, must be not after acceptUntil, if defined
+		if ((getDue() != null) && (getAcceptUntil() != null) && (getDue().after(getAcceptUntil())))
+			return false;
+
+		return true;
 	}
 
 	/**

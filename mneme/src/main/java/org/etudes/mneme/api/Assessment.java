@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.etudes.apps.user.model.User;
+import org.etudes.mneme.model.AssessmentType;
+import org.etudes.mneme.model.QuestionGrouping;
 
 /**
  * Assessment models organizations of questions in parts.

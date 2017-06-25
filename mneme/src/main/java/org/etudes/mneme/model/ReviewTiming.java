@@ -19,7 +19,7 @@
  *
  **********************************************************************************/
 
-package org.etudes.mneme.api;
+package org.etudes.mneme.model;
 
 /**
  * ReviewTiming enumerates the different options for when a submission can be reviewed.
