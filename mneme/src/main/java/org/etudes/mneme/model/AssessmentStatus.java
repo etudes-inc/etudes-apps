@@ -23,6 +23,7 @@ import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * AssessmentStatus contain the status flags of an assessment.
@@ -30,6 +31,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 public class AssessmentStatus {
 
 	/** If the assessment is archives. */
@@ -58,6 +60,9 @@ public class AssessmentStatus {
 
 	/** Date the results were last sent. */
 	protected Date resultsSent = null;
+
+	/** If the assessment is valid. */
+	protected boolean valid = true;
 
 	/**
 	 * Set from another.

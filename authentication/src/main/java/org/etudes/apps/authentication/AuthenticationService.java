@@ -107,5 +107,4 @@ public interface AuthenticationService {
 	 *            The subscription id.
 	 */
 	void removeSubscriptionAuthentications(Long subscriptionId);
-
 }

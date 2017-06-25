@@ -16,7 +16,7 @@
  *
  **********************************************************************************/
 
-package org.etudes.apps.authentication.api;
+package org.etudes.apps.authentication.wapi;
 
 import java.util.Optional;
 
@@ -71,8 +71,9 @@ public class AuthAPI {
 
 		// get the current authentication
 		final Optional<Authentication> authentication = authenticationService.authenticateByToken(authenticationToken, token, req);
-		if (!authentication.isPresent())
+		if (!authentication.isPresent()) {
 			return null;
+		}
 
 		// get the user
 		final User user = authentication.get().getUser();

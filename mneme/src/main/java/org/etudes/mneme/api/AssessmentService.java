@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.zip.ZipOutputStream;
 
 import org.etudes.apps.user.model.User;
+import org.etudes.mneme.model.Assessment;
 import org.jvnet.hk2.annotations.Contract;
 
 /**

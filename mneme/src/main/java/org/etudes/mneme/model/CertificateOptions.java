@@ -21,6 +21,7 @@ package org.etudes.mneme.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * CertificateOptions contains the details of issuing certificates based on submissions to the assessment.
@@ -28,6 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 public class CertificateOptions {
 
 	/** The score threshold needed to pass to issue a certificate. */

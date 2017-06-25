@@ -26,6 +26,7 @@ import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * Overrides holds details of the schedule and options overrides for special access to an assessment by one or more users.
@@ -33,6 +34,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 public class Overrides {
 	/** The overridden accept until date. */
 	protected Date acceptUntil = null;
@@ -67,18 +69,6 @@ public class Overrides {
 
 	/** User ids for this access. */
 	protected List<String> userIds = new ArrayList<String>();
-
-	/**
-	 * @param base
-	 *            The base assessment dates.
-	 * @return If overridden the override, else the base accept until date.
-	 */
-	public Date getEffectiveAcceptUntil(Schedule base) {
-		if (!this.acceptUntilOverride)
-			return base.getAcceptUntil();
-
-		return this.acceptUntil;
-	}
 
 	/**
 	 * @param base
@@ -150,6 +140,18 @@ public class Overrides {
 			return base;
 
 		return this.tries;
+	}
+
+	/**
+	 * @param base
+	 *            The base assessment dates.
+	 * @return If overridden the override, else the base accept until date.
+	 */
+	public Date getEffectiveUntil(Schedule base) {
+		if (!this.acceptUntilOverride)
+			return base.getUntil();
+
+		return this.acceptUntil;
 	}
 
 	/**
@@ -252,25 +254,48 @@ public class Overrides {
 	// }
 
 	/**
-	 * Set the effective accept until date.
+	 * Set as a copy of another (deep copy).
 	 * 
-	 * @param date
-	 *            The accept until date, or null if there is none.
-	 * @param base
-	 *            The assessment's dates.
+	 * @param other
+	 *            The other to copy.
 	 */
-	public void setEffectiveAcceptUntil(Date date, Schedule base) {
-		boolean override = false;
-		Date d = null;
+	public Overrides set(Overrides other) {
 
-		// compute what we should have based on the new setting and the assessment setting
-		if (!Objects.equals(date, base.getAcceptUntil())) {
-			override = true;
-			d = date;
-		}
+		/** The overridden accept until date. */
+		this.acceptUntil = other.acceptUntil;
+		this.acceptUntilOverride = other.acceptUntilOverride;
 
-		this.acceptUntilOverride = override;
-		this.acceptUntil = d;
+		/** The overridden due date. */
+		this.due = other.due;
+		this.dueOverride = other.dueOverride;
+
+		/** Overridden hide until open flag. */
+		this.hideUntilOpen = other.hideUntilOpen;
+		this.hideUntilOpenOverride = other.hideUntilOpenOverride;
+
+		this.id = other.id;
+
+		/** Overridden open date. */
+		this.open = other.open;
+		this.openOverride = other.openOverride;
+
+		/** Overridden time limit. */
+		this.timeLimit = other.timeLimit;
+		this.timeLimitOverride = other.timeLimitOverride;
+
+		/** Overridden tries. */
+		this.tries = other.tries;
+		this.triesOverride = other.triesOverride;
+
+		/** Overridden password. */
+		this.password = new Password();
+		this.password.set(other.password);
+		this.passwordOverride = other.passwordOverride;
+
+		/** User ids for this access. */
+		this.userIds = new ArrayList<String>(other.userIds);
+
+		return this;
 	}
 
 	/**
@@ -411,6 +436,28 @@ public class Overrides {
 	}
 
 	/**
+	 * Set the effective accept until date.
+	 * 
+	 * @param date
+	 *            The accept until date, or null if there is none.
+	 * @param base
+	 *            The assessment's dates.
+	 */
+	public void setEffectiveUntil(Date date, Schedule base) {
+		boolean override = false;
+		Date d = null;
+
+		// compute what we should have based on the new setting and the assessment setting
+		if (!Objects.equals(date, base.getUntil())) {
+			override = true;
+			d = date;
+		}
+
+		this.acceptUntilOverride = override;
+		this.acceptUntil = d;
+	}
+
+	/**
 	 * Set the users to have this access.
 	 * 
 	 * @param newIds
@@ -425,50 +472,5 @@ public class Overrides {
 
 		// TODO: probably need to do this above: make sure that this access is the only one that pertains to these users
 		// ((AssessmentSpecialAccessImpl) this.assessment.getSpecialAccess()).assureSingleAccessForUser(this);
-	}
-
-	/**
-	 * Set as a copy of another (deep copy).
-	 * 
-	 * @param other
-	 *            The other to copy.
-	 */
-	public Overrides set(Overrides other) {
-
-		/** The overridden accept until date. */
-		this.acceptUntil = other.acceptUntil;
-		this.acceptUntilOverride = other.acceptUntilOverride;
-
-		/** The overridden due date. */
-		this.due = other.due;
-		this.dueOverride = other.dueOverride;
-
-		/** Overridden hide until open flag. */
-		this.hideUntilOpen = other.hideUntilOpen;
-		this.hideUntilOpenOverride = other.hideUntilOpenOverride;
-
-		this.id = other.id;
-
-		/** Overridden open date. */
-		this.open = other.open;
-		this.openOverride = other.openOverride;
-
-		/** Overridden time limit. */
-		this.timeLimit = other.timeLimit;
-		this.timeLimitOverride = other.timeLimitOverride;
-
-		/** Overridden tries. */
-		this.tries = other.tries;
-		this.triesOverride = other.triesOverride;
-
-		/** Overridden password. */
-		this.password = new Password();
-		this.password.set(other.password);
-		this.passwordOverride = other.passwordOverride;
-
-		/** User ids for this access. */
-		this.userIds = new ArrayList<String>(other.userIds);
-
-		return this;
 	}
 }

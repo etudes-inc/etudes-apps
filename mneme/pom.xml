@@ -38,6 +38,11 @@
 
 		<dependency>
 			<groupId>org.etudes.apps</groupId>
+			<artifactId>authentication</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.etudes.apps</groupId>
 			<artifactId>user</artifactId>
 		</dependency>
 

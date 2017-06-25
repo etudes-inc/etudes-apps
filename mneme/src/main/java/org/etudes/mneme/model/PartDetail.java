@@ -28,6 +28,7 @@ import org.etudes.mneme.api.Ordering;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * PartDetail models the PoolDraw or QuestionPick entries that specify the question makeup of a Part.
@@ -35,6 +36,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 public abstract class PartDetail {
 	public class MyOrdering implements Ordering<PartDetail> {
 		protected PartDetail detail = null;

@@ -21,6 +21,7 @@ package org.etudes.mneme.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * GradingOptions contain the details of how an assessment is to be graded.
@@ -28,6 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 public class GradingOptions {
 	/** if student identities are invisible to the grader when grading */
 	protected boolean anonymous = false;

@@ -18,16 +18,23 @@
 
 package org.etudes.mneme.wapi;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import org.etudes.apps.authentication.AuthenticationService;
+import org.etudes.apps.authentication.model.Authentication;
+import org.etudes.mneme.AssessmentService;
+import org.etudes.mneme.model.Assessment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,19 +44,6 @@ import lombok.NoArgsConstructor;
 
 @Path("/mneme/")
 public class MnemeAPI {
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	class Assessment {
-		Date due;
-		Long id;
-		Date open;
-		boolean published;
-		String title;
-		String type;
-		Date until;
-		boolean valid;
-	}
 
 	@Data
 	@NoArgsConstructor
@@ -60,8 +54,16 @@ public class MnemeAPI {
 
 	final static private Logger logger = LoggerFactory.getLogger(MnemeAPI.class);
 
+	/** The assessment service, injected into the constructor. */
+	final AssessmentService asmtService;
+
+	final AuthenticationService authService;
+
 	@Inject
-	public MnemeAPI() {
+	public MnemeAPI(AssessmentService asmtService, AuthenticationService authService) {
+		this.asmtService = asmtService;
+		this.authService = authService;
+
 		logger.info("Test");
 	}
 
@@ -70,8 +72,11 @@ public class MnemeAPI {
 	@GET
 	@Path("/assessments")
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Assessment> getAssessments() {
+	public List<Assessment> getAssessments( //
+			@CookieParam(AuthenticationService.TOKEN) Long authenticationToken, @QueryParam(AuthenticationService.TOKEN_ALT) Long token, //
+			@Context HttpServletRequest req) {
 
+		// TODO: remove this fake delay!
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -79,10 +84,21 @@ public class MnemeAPI {
 			e.printStackTrace();
 		}
 
-		List<Assessment> rv = new ArrayList<>();
-		rv.add(new Assessment(new Date(), 1L, new Date(), true, "A", "First Test", new Date(), true));
-		rv.add(new Assessment(new Date(), 2L, new Date(), true, "A", "Second Test", new Date(), false));
-		rv.add(new Assessment(new Date(), 3L, new Date(), false, "A", "Third Test", new Date(), true));
+		// get the current authentication
+		Optional<Authentication> authentication = authService.authenticateByToken(authenticationToken, token, req);
+		if (!authentication.isPresent()) {
+
+			// TODO: allowing through for testing
+			// return null;
+			authentication = Optional.of(new Authentication().setContext("TEST"));
+		}
+
+		// get the assessments
+		final String context = authentication.get().getContext();
+		final boolean publishedOnly = false;
+		final AssessmentService.Sort sort = AssessmentService.Sort.title_a;
+
+		List<Assessment> rv = asmtService.getContextAssessments(context, sort, publishedOnly);
 
 		return rv;
 	}

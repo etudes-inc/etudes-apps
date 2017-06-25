@@ -20,12 +20,12 @@ package org.etudes.mneme.model;
 
 import java.util.Date;
 
-import org.etudes.mneme.api.Assessment;
 import org.etudes.mneme.api.MnemeService;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * Schedule contain the various dates related to an assessment.
@@ -33,10 +33,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 public class Schedule {
-	/** The date after which submissions will not be accepted - if null, submissions will continue to be accepted. */
-	protected Date acceptUntil = null;
-
 	/** The date the assessment was archived. */
 	protected Date archived = null;
 
@@ -48,6 +46,9 @@ public class Schedule {
 
 	/** The open date. Only after this date (if defined) is the assessment open for submission. If not defined, it is open when published. */
 	protected Date open = null;
+
+	/** The date after which submissions will not be accepted - if null, submissions will continue to be accepted. */
+	protected Date until = null;
 
 	/**
 	 * @return The number of ms from now that the due date on this assessment will be reached, 0 if it has already been reached, or null if it has no due date.
@@ -105,7 +106,7 @@ public class Schedule {
 	 */
 	public Date getSubmitUntil() {
 		// this is the acceptUntil date, if defined, or the due date.
-		Date closedDate = getAcceptUntil();
+		Date closedDate = getUntil();
 		if (closedDate == null)
 			closedDate = getDue();
 		return closedDate;
@@ -141,7 +142,7 @@ public class Schedule {
 	 * @return if we are now between due and accept until dates.
 	 */
 	public boolean isLate() {
-		Date acceptUntil = getAcceptUntil();
+		Date acceptUntil = getUntil();
 		Date due = getDue();
 		if ((acceptUntil != null) && (due != null)) {
 			Date now = new Date();
@@ -188,11 +189,11 @@ public class Schedule {
 		// open, if defined, must be before acceptUntil and due, if defined
 		if ((getOpen() != null) && (getDue() != null) && (!getOpen().before(getDue())))
 			return false;
-		if ((getOpen() != null) && (getAcceptUntil() != null) && (!getOpen().before(getAcceptUntil())))
+		if ((getOpen() != null) && (getUntil() != null) && (!getOpen().before(getUntil())))
 			return false;
 
 		// due, if defined, must be not after acceptUntil, if defined
-		if ((getDue() != null) && (getAcceptUntil() != null) && (getDue().after(getAcceptUntil())))
+		if ((getDue() != null) && (getUntil() != null) && (getDue().after(getUntil())))
 			return false;
 
 		return true;
@@ -209,7 +210,7 @@ public class Schedule {
 	 * @return this (for chaining).
 	 */
 	public Schedule set(Schedule other) {
-		this.acceptUntil = other.acceptUntil;
+		this.until = other.until;
 		this.archived = other.archived;
 		this.due = other.due;
 		this.open = other.open;

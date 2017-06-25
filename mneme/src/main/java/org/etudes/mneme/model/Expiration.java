@@ -22,12 +22,14 @@ import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * Expiration models information about the time a submission or assessment expires and can no longer be worked upon.
  */
 @Data
 @AllArgsConstructor
+@Accessors(chain = true)
 public class Expiration {
 	/**
 	 * The possible expiration causes.

@@ -32,6 +32,7 @@ import org.etudes.mneme.api.Shuffler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * Part holds a set of questions within an assessment.
@@ -39,6 +40,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 public class Part {
 	public class MyOrdering implements Ordering<Part> {
 		protected Part part = null;

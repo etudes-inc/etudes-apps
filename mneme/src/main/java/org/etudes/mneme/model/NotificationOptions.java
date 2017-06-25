@@ -21,6 +21,7 @@ package org.etudes.mneme.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * NotificationOptions contains the details related to notifications at assessment close.
@@ -28,6 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 public class NotificationOptions {
 
 	/** If a notification should be sent when the assessment closes... ??? */

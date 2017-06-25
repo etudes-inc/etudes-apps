@@ -23,11 +23,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import org.etudes.mneme.api.Assessment;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * SpecialAccess holds details of special access for select users to an assessment.
@@ -35,6 +34,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 public class SpecialAccess {
 	/** The special access definitions. */
 	protected List<Overrides> specialAccess = new ArrayList<Overrides>();
@@ -233,21 +233,21 @@ public class SpecialAccess {
 		return !this.specialAccess.isEmpty();
 	}
 
-	/**
-	 * @param base
-	 *            The assessment's dates.
-	 * @return validity.
-	 */
-	public boolean isValid(Schedule base) {
-		for (Overrides access : this.specialAccess) {
-			if (access.isEmpty())
-				continue;
-			if (!access.isValid(base))
-				return false;
-		}
-
-		return true;
-	}
+//	/**
+//	 * @param base
+//	 *            The assessment's dates.
+//	 * @return validity.
+//	 */
+//	public boolean isValid(Schedule base) {
+//		for (Overrides access : this.specialAccess) {
+//			if (access.isEmpty())
+//				continue;
+//			if (!access.isValid(base))
+//				return false;
+//		}
+//
+//		return true;
+//	}
 
 	// TODO: removeAccess() cannot be made to locked assessments if set to a formal course evaluation
 

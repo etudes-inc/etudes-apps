@@ -21,6 +21,7 @@ package org.etudes.mneme.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * PointsOptions contains the assessment level points details.
@@ -28,6 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 public class PointsOptions {
 
 	/** The assessment points value (overrides points set in parts) - used for offline (which have no parts) */

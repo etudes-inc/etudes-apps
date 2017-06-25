@@ -30,6 +30,7 @@ import org.etudes.mneme.api.Question;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 /**
  * Parts models the collection of parts of an assessment.
@@ -37,6 +38,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Accessors(chain = true)
 public class Parts {
 	/** If numbering of questions across part boundaries should be continuous or not. */
 	protected boolean continuousNumbering = true;

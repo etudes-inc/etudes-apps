@@ -22,16 +22,18 @@ import javax.inject.Singleton;
 
 import org.eclipse.jetty.server.Server;
 import org.etudes.apps.authentication.AuthenticationService;
-import org.etudes.apps.authentication.api.AuthAPI;
 import org.etudes.apps.authentication.data.AuthenticationData;
 import org.etudes.apps.authentication.impl.AuthenticationDataJDBIImpl;
 import org.etudes.apps.authentication.impl.AuthenticationServiceImpl;
+import org.etudes.apps.authentication.wapi.AuthAPI;
 import org.etudes.apps.db.DB;
 import org.etudes.apps.dispatcher.LTI;
 import org.etudes.apps.user.UserService;
 import org.etudes.apps.user.data.UserData;
 import org.etudes.apps.user.impl.UserDataJDBIImpl;
 import org.etudes.apps.user.impl.UserServiceImpl;
+import org.etudes.mneme.AssessmentService;
+import org.etudes.mneme.impl.AssessmentServiceImpl;
 import org.etudes.mneme.wapi.MnemeAPI;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -129,6 +131,10 @@ public class Application extends io.dropwizard.Application<Configuration> {
 
 				// make our services available for injection - as singletons
 
+				// assessment
+				// bind(AuthenticationDataJDBIImpl.class).to(AuthenticationData.class).in(Singleton.class);
+				bind(AssessmentServiceImpl.class).to(AssessmentService.class).in(Singleton.class);
+
 				// authentication
 				bind(AuthenticationDataJDBIImpl.class).to(AuthenticationData.class).in(Singleton.class);
 				bind(AuthenticationServiceImpl.class).to(AuthenticationService.class).in(Singleton.class);
@@ -166,6 +172,7 @@ public class Application extends io.dropwizard.Application<Configuration> {
 				ServiceLocator locator = ((ServletContainer) environment.getJerseyServletContainer()).getApplicationHandler().getServiceLocator();
 
 				// start our singletons
+				locator.getService(AssessmentService.class);
 				locator.getService(AuthenticationService.class);
 				locator.getService(UserService.class);
 
