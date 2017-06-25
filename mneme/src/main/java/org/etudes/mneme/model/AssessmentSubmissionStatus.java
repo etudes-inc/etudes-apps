@@ -22,18 +22,8 @@
 package org.etudes.mneme.model;
 
 /**
- * AssessmentType enumerates the different assessment types.
+ * AssessmentSubmissionStatus enumerates different possible status for the submissions of a user to an assessment.
  */
-public enum AssessmentType {
-	assignment(1), offline(3), survey(2), test(0);
-
-	private final int sortOrder;
-
-	private AssessmentType(int sortOrder) {
-		this.sortOrder = Integer.valueOf(sortOrder);
-	}
-
-	public Integer getSortValue() {
-		return sortOrder;
-	}
+public enum AssessmentSubmissionStatus {
+	complete, completeReady, future, hiddenTillOpen, inProgress, inProgressAlert, other, over, overdueCompleteReady, overdueReady, ready
 }

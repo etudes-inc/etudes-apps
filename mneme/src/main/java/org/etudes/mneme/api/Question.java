@@ -21,6 +21,8 @@
 
 package org.etudes.mneme.api;
 
+import org.etudes.mneme.model.Reference;
+
 /**
  * Question defines the questions.
  */

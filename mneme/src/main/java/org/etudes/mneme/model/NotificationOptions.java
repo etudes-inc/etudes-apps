@@ -1,10 +1,7 @@
 /**********************************************************************************
  *
- * Copyright (c) 2008, 2017 Etudes, Inc.
+ * Copyright (c) 2017 Etudes, Inc.
  * 
- * Portions completed before September 1, 2008
- * Copyright (c) 2007, 2008 The Regents of the University of Michigan & Foothill College, ETUDES Project
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,9 +18,35 @@
 
 package org.etudes.mneme.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
- * ReviewTiming enumerates the different options for when a submission can be reviewed.
+ * NotificationOptions contains the details related to notifications at assessment close.
  */
-public enum ReviewTiming {
-	submitted, graded, date, never;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class NotificationOptions {
+
+	/** If a notification should be sent when the assessment closes... ??? */
+	protected boolean notifyEval = false;
+
+	/** Who to send the assessment results to. */
+	protected String resultsEmail = null;
+
+	/**
+	 * Set from another.
+	 * 
+	 * @param other
+	 *            The other.
+	 * @return this (for chaining).
+	 */
+	public NotificationOptions set(NotificationOptions other) {
+		this.notifyEval = other.isNotifyEval();
+		this.resultsEmail = other.getResultsEmail();
+
+		return this;
+	}
 }

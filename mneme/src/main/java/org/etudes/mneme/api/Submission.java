@@ -24,6 +24,9 @@ package org.etudes.mneme.api;
 import java.util.Date;
 import java.util.List;
 
+import org.etudes.mneme.model.AssessmentSubmissionStatus;
+import org.etudes.mneme.model.Reference;
+
 /**
  * Submission is a user's response to an assessment. Each time the user takes the assessment, a new submission is made.
  */
@@ -392,7 +395,7 @@ public interface Submission {
 	/**
 	 * @return The defined special access for the submitter to this assessment, or null if not defined.
 	 */
-	AssessmentAccess getSpecialAccess();
+	Overrides getSpecialAccess();
 
 	/**
 	 * Access the start date for this submission.

@@ -58,4 +58,25 @@ public class AssessmentStatus {
 
 	/** Date the results were last sent. */
 	protected Date resultsSent = null;
+
+	/**
+	 * Set from another.
+	 * 
+	 * @param other
+	 *            The other.
+	 * @return this (for chaining).
+	 */
+	public AssessmentStatus set(AssessmentStatus other) {
+		this.archived = other.isArchived();
+		this.evaluationSent = other.getEvaluationSent();
+		this.formalCourseEval = other.isFormalCourseEval();
+		this.frozen = other.isFrozen();
+		this.live = other.isLive();
+		this.locked = other.isLocked();
+		this.mint = other.isMint();
+		this.published = other.isPublished();
+		this.resultsSent = other.getResultsSent();
+
+		return this;
+	}
 }

@@ -30,12 +30,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class DeliveryOptions {
-	
+
+	/**
+	 * QuestionGrouping enumerates the different options for grouping questions for display at delivery.
+	 */
+	public enum QuestionGrouping {
+		question, part, assessment
+	}
+
 	/** If an honor pledge is required to participate. */
 	protected boolean honorPledge = false;
 
 	/** The assessment password. */
-	protected AssessmentPassword password = null;
+	protected Password password = null;
 
 	/** How to group questions when presenting the assessment. */
 	protected QuestionGrouping questionGrouping = QuestionGrouping.question;
@@ -57,4 +64,25 @@ public class DeliveryOptions {
 
 	/** Tries limit for the assessment, if any. */
 	protected Integer tries = Integer.valueOf(1);
+
+	/**
+	 * Set from another.
+	 * 
+	 * @param other
+	 *            The other.
+	 * @return this (for chaining).
+	 */
+	public DeliveryOptions set(DeliveryOptions other) {
+		this.honorPledge = other.honorPledge;
+		this.password = new Password().set(other.getPassword());
+		this.questionGrouping = other.questionGrouping;
+		this.randomAccess = other.randomAccess;
+		this.showHints = other.showHints;
+		this.showModelAnswer = other.showModelAnswer;
+		this.shuffleChoicesOverride = other.shuffleChoicesOverride;
+		this.timeLimit = other.timeLimit;
+		this.tries = other.tries;
+
+		return this;
+	}
 }

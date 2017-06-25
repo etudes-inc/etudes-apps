@@ -28,12 +28,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * AssessmentAccess holds details of a single special access grant for select users to an assessment.
+ * Overrides holds details of the schedule and options overrides for special access to an assessment by one or more users.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssessmentAccess {
+public class Overrides {
 	/** The overridden accept until date. */
 	protected Date acceptUntil = null;
 	protected boolean acceptUntilOverride = false;
@@ -53,7 +53,7 @@ public class AssessmentAccess {
 	protected boolean openOverride = false;
 
 	/** Overridden password. */
-	protected AssessmentPassword password = new AssessmentPassword();
+	protected Password password = new Password();
 	protected boolean passwordOverride = false;
 
 	/** Overridden time limit. */
@@ -69,21 +69,11 @@ public class AssessmentAccess {
 	protected List<String> userIds = new ArrayList<String>();
 
 	/**
-	 * Construct.
-	 * 
-	 * @param other
-	 *            The other to copy.
-	 */
-	public AssessmentAccess(AssessmentAccess other) {
-		set(other);
-	}
-
-	/**
 	 * @param base
 	 *            The base assessment dates.
 	 * @return If overridden the override, else the base accept until date.
 	 */
-	public Date getEffectiveAcceptUntil(AssessmentDates base) {
+	public Date getEffectiveAcceptUntil(Schedule base) {
 		if (!this.acceptUntilOverride)
 			return base.getAcceptUntil();
 
@@ -95,7 +85,7 @@ public class AssessmentAccess {
 	 *            The base assessment dates.
 	 * @return If overridden the override, else the base due date.
 	 */
-	public Date getEffectiveDue(AssessmentDates base) {
+	public Date getEffectiveDue(Schedule base) {
 		if (!this.dueOverride)
 			return base.getDue();
 
@@ -107,7 +97,7 @@ public class AssessmentAccess {
 	 *            The base assessment dates.
 	 * @return If overridden the override, else the base open date.
 	 */
-	public Date getEffectiveOpen(AssessmentDates base) {
+	public Date getEffectiveOpen(Schedule base) {
 		if (!this.openOverride)
 			return base.getOpen();
 
@@ -119,7 +109,7 @@ public class AssessmentAccess {
 	 *            The base password.
 	 * @return If overridden the override, else the base password.
 	 */
-	public AssessmentPassword getEffectivePassword(AssessmentPassword base) {
+	public Password getEffectivePassword(Password base) {
 		if (!this.passwordOverride)
 			return base;
 
@@ -131,7 +121,7 @@ public class AssessmentAccess {
 	 *            The base password.
 	 * @return If overridden the override, else the base password value.
 	 */
-	public String getEffectivePasswordValue(AssessmentPassword base) {
+	public String getEffectivePasswordValue(Password base) {
 		if (!this.passwordOverride)
 			return base.getPassword();
 
@@ -240,35 +230,26 @@ public class AssessmentAccess {
 		return this.userIds.contains(userId);
 	}
 
-	/**
-	 * @param other
-	 *            The other AssessmentAccess
-	 * @return if this and the other are the same AssessmentAccess (by id).
-	 */
-	public boolean isSameId(AssessmentAccess other) {
-		return this.getId().equals(other.getId());
-	}
-
-	/**
-	 * @base The base assessment dates.
-	 * @return validity
-	 */
-	public boolean isValid(AssessmentDates base) {
-
-		// TODO: must also be valid against the base assessment dates as currently defined
-
-		// open, if defined, must be before acceptUntil and due, if defined
-		if ((getOpen() != null) && (getDue() != null) && (!getOpen().before(getDue())))
-			return false;
-		if ((getOpen() != null) && (getAcceptUntil() != null) && (!getOpen().before(getAcceptUntil())))
-			return false;
-
-		// due, if defined, must be not after acceptUntil, if defined
-		if ((getDue() != null) && (getAcceptUntil() != null) && (getDue().after(getAcceptUntil())))
-			return false;
-
-		return true;
-	}
+	// /**
+	// * @base The base assessment dates.
+	// * @return validity
+	// */
+	// public boolean isValid(Schedule base) {
+	//
+	// // TODO: must also be valid against the base assessment dates as currently defined
+	//
+	// // open, if defined, must be before acceptUntil and due, if defined
+	// if ((getOpen() != null) && (getDue() != null) && (!getOpen().before(getDue())))
+	// return false;
+	// if ((getOpen() != null) && (getAcceptUntil() != null) && (!getOpen().before(getAcceptUntil())))
+	// return false;
+	//
+	// // due, if defined, must be not after acceptUntil, if defined
+	// if ((getDue() != null) && (getAcceptUntil() != null) && (getDue().after(getAcceptUntil())))
+	// return false;
+	//
+	// return true;
+	// }
 
 	/**
 	 * Set the effective accept until date.
@@ -278,7 +259,7 @@ public class AssessmentAccess {
 	 * @param base
 	 *            The assessment's dates.
 	 */
-	public void setEffectiveAcceptUntil(Date date, AssessmentDates base) {
+	public void setEffectiveAcceptUntil(Date date, Schedule base) {
 		boolean override = false;
 		Date d = null;
 
@@ -300,7 +281,7 @@ public class AssessmentAccess {
 	 * @param base
 	 *            The assessment's dates.
 	 */
-	public void setEffectiveDueDate(Date date, AssessmentDates base) {
+	public void setEffectiveDueDate(Date date, Schedule base) {
 		boolean override = false;
 		Date d = null;
 
@@ -343,7 +324,7 @@ public class AssessmentAccess {
 	 * @param base
 	 *            The assessment's dates.
 	 */
-	public void setEffectiveOpen(Date date, AssessmentDates base) {
+	public void setEffectiveOpen(Date date, Schedule base) {
 		boolean override = false;
 		Date d = null;
 
@@ -365,7 +346,7 @@ public class AssessmentAccess {
 	 * @param base
 	 *            the assessment's password.
 	 */
-	public void setEffectivePassword(String password, AssessmentPassword base) {
+	public void setEffectivePassword(String password, Password base) {
 		// massage the password
 		if (password != null) {
 			password = password.trim();
@@ -452,7 +433,7 @@ public class AssessmentAccess {
 	 * @param other
 	 *            The other to copy.
 	 */
-	protected void set(AssessmentAccess other) {
+	public Overrides set(Overrides other) {
 
 		/** The overridden accept until date. */
 		this.acceptUntil = other.acceptUntil;
@@ -481,11 +462,13 @@ public class AssessmentAccess {
 		this.triesOverride = other.triesOverride;
 
 		/** Overridden password. */
-		this.password = new AssessmentPassword();
+		this.password = new Password();
 		this.password.set(other.password);
 		this.passwordOverride = other.passwordOverride;
 
 		/** User ids for this access. */
 		this.userIds = new ArrayList<String>(other.userIds);
+
+		return this;
 	}
 }

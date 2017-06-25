@@ -1,10 +1,7 @@
 /**********************************************************************************
  *
- * Copyright (c) 2008, 2014, 2017 Etudes, Inc.
+ * Copyright (c) 2017 Etudes, Inc.
  * 
- * Portions completed before September 1, 2008
- * Copyright (c) 2007, 2008 The Regents of the University of Michigan & Foothill College, ETUDES Project
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,11 +16,10 @@
  *
  **********************************************************************************/
 
-package org.etudes.mneme.api;
+package org.etudes.mneme.model;
 
 /**
- * AssessmentSubmissionStatus enumerates different possible status for the submissions of a user to an assessment.
+ * TODO: placeholder for the Sakai entity reference object, for things like attachments
  */
-public enum AssessmentSubmissionStatus {
-	complete, completeReady, future, hiddenTillOpen, inProgress, inProgressAlert, other, over, overdueCompleteReady, overdueReady, ready
+public interface Reference {
 }

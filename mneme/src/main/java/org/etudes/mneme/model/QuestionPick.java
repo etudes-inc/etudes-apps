@@ -1,9 +1,6 @@
 /**********************************************************************************
- * $URL: https://source.etudes.org/svn/apps/mneme/trunk/mneme-impl/impl/src/java/org/etudes/mneme/impl/QuestionPickImpl.java $
- * $Id: QuestionPickImpl.java 10999 2015-06-02 23:02:18Z mallikamt $
- ***********************************************************************************
  *
- * Copyright (c) 2009, 2010 Etudes, Inc.
+ * Copyright (c) 2017 Etudes, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -272,10 +269,13 @@ public class QuestionPick extends PartDetail {
 	 * 
 	 * @param other
 	 *            The other to copy.
+	 * @return this (for chaining).
 	 */
-	protected void set(QuestionPick other) {
+	public QuestionPick set(QuestionPick other) {
 		super.set(other);
 		this.origQuestionId = other.origQuestionId;
 		this.questionId = other.questionId;
+
+		return this;
 	}
 }

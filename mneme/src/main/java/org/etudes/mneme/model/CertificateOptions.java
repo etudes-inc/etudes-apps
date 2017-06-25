@@ -23,50 +23,30 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * AssessmentPassword models passwords on assessments.
+ * CertificateOptions contains the details of issuing certificates based on submissions to the assessment.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssessmentPassword {
-	/** The password - clear text. */
-	protected String password = null;
+public class CertificateOptions {
+
+	/** The score threshold needed to pass to issue a certificate. */
+	protected float certificateScoreThreshold = 0;
+
+	/** If the assessment issues a certificate if the certificateScoreThreshold is met by a submission. */
+	protected boolean issuingCertificates = false;
 
 	/**
-	 * @param password
-	 *            The clear text password as entered.
-	 * @return if the provided password (clear text) matches the defined password for the assessment.
-	 */
-	public boolean checkPassword(String password) {
-		if (password == null)
-			return false;
-
-		return password.equals(this.password);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setPassword(String password) {
-		// massage the password
-		if (password != null) {
-			password = password.trim();
-			if (password.length() > 255)
-				password = password.substring(0, 255);
-			if (password.length() == 0)
-				password = null;
-		}
-
-		this.password = password;
-	}
-
-	/**
-	 * Set as a copy of another.
+	 * Set from another.
 	 * 
 	 * @param other
-	 *            The other to copy.
+	 *            The other.
+	 * @return this (for chaining).
 	 */
-	protected void set(AssessmentPassword other) {
-		this.password = other.password;
+	public CertificateOptions set(CertificateOptions other) {
+		this.certificateScoreThreshold = other.certificateScoreThreshold;
+		this.issuingCertificates = other.issuingCertificates;
+
+		return this;
 	}
 }

@@ -24,6 +24,7 @@ package org.etudes.mneme.api;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
+import org.etudes.mneme.model.Reference;
 
 /**
  * Evaluation holds a comment and a score from an evaluator for a submission or an answer.

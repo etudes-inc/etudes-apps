@@ -28,12 +28,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * AssessmentDates contain the details of the availability dates of an assessment.
+ * Schedule contain the various dates related to an assessment.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssessmentDates {
+public class Schedule {
 	/** The date after which submissions will not be accepted - if null, submissions will continue to be accepted. */
 	protected Date acceptUntil = null;
 
@@ -71,7 +71,7 @@ public class AssessmentDates {
 	 */
 	public Expiration getExpiration() {
 		// see if the assessment has a hard due date (no submissions allowed)
-		Date closedDate = this.getSubmitUntilDate();
+		Date closedDate = this.getSubmitUntil();
 		if (closedDate == null)
 			return null;
 
@@ -103,7 +103,7 @@ public class AssessmentDates {
 	/**
 	 * @return the date after which submissions are not allowed. Computed based on due and accept-until dates.
 	 */
-	public Date getSubmitUntilDate() {
+	public Date getSubmitUntil() {
 		// this is the acceptUntil date, if defined, or the due date.
 		Date closedDate = getAcceptUntil();
 		if (closedDate == null)
@@ -126,12 +126,12 @@ public class AssessmentDates {
 		// TODO:
 
 		// if there is no end to submissions, we are never closed
-		if (getSubmitUntilDate() == null)
+		if (getSubmitUntil() == null)
 			return false;
 
 		// we are closed if after the submit until date
 		Date now = new Date();
-		if (now.after(getSubmitUntilDate()))
+		if (now.after(getSubmitUntil()))
 			return true;
 
 		return false;
@@ -175,7 +175,7 @@ public class AssessmentDates {
 			return Boolean.FALSE;
 
 		// if we have a submit-until date and we are past it, considering grace
-		if ((getSubmitUntilDate() != null) && (now.getTime() > (getSubmitUntilDate().getTime() + grace)))
+		if ((getSubmitUntil() != null) && (now.getTime() > (getSubmitUntil().getTime() + grace)))
 			return Boolean.FALSE;
 
 		return Boolean.TRUE;
@@ -206,12 +206,15 @@ public class AssessmentDates {
 	 * 
 	 * @param other
 	 *            The other to copy.
+	 * @return this (for chaining).
 	 */
-	protected void set(AssessmentDates other) {
+	public Schedule set(Schedule other) {
 		this.acceptUntil = other.acceptUntil;
 		this.archived = other.archived;
 		this.due = other.due;
 		this.open = other.open;
 		this.hideUntilOpen = other.hideUntilOpen;
+
+		return this;
 	}
 }

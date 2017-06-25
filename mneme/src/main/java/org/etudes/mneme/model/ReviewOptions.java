@@ -25,18 +25,32 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * AssessmentReview contain the details of how submissions can be reviewed.
+ * ReviewOptions models the details of how an assessment's submissions can be reviewed.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssessmentReview {
+public class ReviewOptions {
+
+	/**
+	 * ShowCorrect enumerates an assessment's review options for showing correct answer / answer key
+	 */
+	public enum ShowCorrect {
+		correct_only, incorrect_key, incorrect_only, no, yes
+	}
+
+	/**
+	 * Timing enumerates the different options for when a submission can be reviewed.
+	 */
+	public enum Timing {
+		date, graded, never, submitted;
+	}
 
 	/** the review date (for timing=BY_DATE) after which submissions may be reviewed */
 	protected Date date = null;
 
 	/** ReviewShowCorrect setting. */
-	protected ReviewShowCorrect showCorrectAnswer = ReviewShowCorrect.yes;
+	protected ShowCorrect showCorrectAnswer = ShowCorrect.yes;
 
 	/** if review includes the authored correct / incorrect feedback */
 	protected boolean showFeedback = true;
@@ -45,14 +59,14 @@ public class AssessmentReview {
 	protected boolean showSummary = true;
 
 	/** when review can happen */
-	protected ReviewTiming timing = ReviewTiming.submitted;
+	protected Timing timing = Timing.submitted;
 
 	/**
 	 * @return if review is enabled right now for this assessment, considering when now is and all the review settings.
 	 */
 	public boolean isNowAvailable() {
 		// if review timing is date, we can tell without a submission
-		if (this.timing == ReviewTiming.date) {
+		if (this.timing == Timing.date) {
 			if (this.date != null) {
 				// we can now review if NOW is after the review date
 				return new Date().after(this.date);
@@ -107,12 +121,15 @@ public class AssessmentReview {
 	 * 
 	 * @param other
 	 *            The other to copy.
+	 * @return this (for chaining).
 	 */
-	protected void set(AssessmentReview other) {
+	public ReviewOptions set(ReviewOptions other) {
 		this.date = other.date;
 		this.showCorrectAnswer = other.showCorrectAnswer;
 		this.showFeedback = other.showFeedback;
 		this.showSummary = other.showSummary;
 		this.timing = other.timing;
+
+		return this;
 	}
 }

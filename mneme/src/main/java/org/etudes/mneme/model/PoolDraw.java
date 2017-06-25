@@ -370,11 +370,14 @@ public class PoolDraw extends PartDetail {
 	 * 
 	 * @param other
 	 *            The other to copy.
+	 * @return this (for chaining).
 	 */
-	protected void set(PoolDraw other) {
+	public PoolDraw set(PoolDraw other) {
 		super.set(other);
 		this.numQuestions = other.numQuestions;
 		this.origPoolId = other.origPoolId;
 		this.poolId = other.poolId;
+
+		return this;
 	}
 }

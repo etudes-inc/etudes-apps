@@ -23,34 +23,42 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * AssessmentGrading contain the details of how submissions to an assessment are graded.
+ * Password models the access password for an assessment.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssessmentGrading {
-	/** if student identities are invisible to the grader when grading */
-	protected boolean anonymous = false;
+public class Password {
 
-	/** if submissions are to be considered graded as soon as submitted (based only on the auto-scoring) */
-	protected boolean autoRelease = true;
+	/** The password - clear text. */
+	protected String password = null;
 
-	/** if grades are to be sent to a gradebook */
-	protected boolean gradebookIntegration = false;
+	/**
+	 * @param password
+	 *            The clear text password as entered.
+	 * @return if the provided password (clear text) matches the defined password for the assessment.
+	 */
+	public boolean checkPassword(String password) {
+		if (password == null)
+			return false;
 
-	/** if the assessment was rejected as an entry in a gradebook */
-	protected boolean gradebookRejectedAssessment = false;
+		return password.equals(this.password);
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setGradebookIntegration(boolean setting) {
-		this.gradebookIntegration = setting;
-
-		// clear the invalid flag if we are no longer integrated
-		if (!this.gradebookIntegration) {
-			this.gradebookRejectedAssessment = false;
+	public void setPassword(String password) {
+		// massage the password
+		if (password != null) {
+			password = password.trim();
+			if (password.length() > 255)
+				password = password.substring(0, 255);
+			if (password.length() == 0)
+				password = null;
 		}
+
+		this.password = password;
 	}
 
 	/**
@@ -58,11 +66,11 @@ public class AssessmentGrading {
 	 * 
 	 * @param other
 	 *            The other to copy.
+	 * @return this (for chaining).
 	 */
-	protected void set(AssessmentGrading other) {
-		this.autoRelease = other.autoRelease;
-		this.gradebookIntegration = other.gradebookIntegration;
-		this.gradebookRejectedAssessment = other.gradebookRejectedAssessment;
-		this.anonymous = other.anonymous;
+	public Password set(Password other) {
+		this.password = other.password;
+
+		return this;
 	}
 }

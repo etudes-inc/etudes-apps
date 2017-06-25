@@ -21,8 +21,6 @@ package org.etudes.mneme.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.etudes.mneme.api.Reference;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -78,10 +76,13 @@ public class Presentation {
 	 * 
 	 * @param other
 	 *            The other to copy.
+	 * @return this (for chaining).
 	 */
-	protected void set(Presentation other) {
+	public Presentation set(Presentation other) {
 		this.attachments = new ArrayList<Reference>(other.attachments.size());
 		this.attachments.addAll(other.attachments);
 		this.text = other.text;
+
+		return this;
 	}
 }

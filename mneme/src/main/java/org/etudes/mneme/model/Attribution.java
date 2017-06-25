@@ -31,7 +31,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Attribution {
+
+	/** The date */
 	protected Date date = null;
+
+	/** The user id. */
 	protected String userId = null;
 
 	/**
@@ -39,9 +43,12 @@ public class Attribution {
 	 * 
 	 * @param other
 	 *            The other to copy.
+	 * @return this (for chaining).
 	 */
-	protected void set(Attribution other) {
+	public Attribution set(Attribution other) {
 		this.date = other.date;
 		this.userId = other.userId;
+
+		return this;
 	}
 }

@@ -32,12 +32,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * AssessmentParts contain the details of the parts of an assessment.
+ * Parts models the collection of parts of an assessment.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssessmentParts {
+public class Parts {
 	/** If numbering of questions across part boundaries should be continuous or not. */
 	protected boolean continuousNumbering = true;
 
@@ -483,7 +483,7 @@ public class AssessmentParts {
 	 * 
 	 * @return The sum of all possible points for this assessment.
 	 */
-	public Float getTotalPoints() {
+	public float getTotalPoints() {
 		// TODO:
 		// no point assessments have no points
 		// if (!this.assessment.getHasPoints()) return Float.valueOf(0f);
@@ -496,7 +496,7 @@ public class AssessmentParts {
 		// round away bogus decimals
 		rv = Math.round(rv * 100.0f) / 100.0f;
 
-		return Float.valueOf(rv);
+		return rv;
 	}
 
 	/**
@@ -760,8 +760,9 @@ public class AssessmentParts {
 	 * 
 	 * @param other
 	 *            The other to copy.
+	 * @return this (for chaining).
 	 */
-	protected void set(AssessmentParts other) {
+	public Parts set(Parts other) {
 		this.continuousNumbering = other.continuousNumbering;
 		this.parts = new ArrayList<Part>(other.parts.size());
 		this.showPresentation = other.showPresentation;
@@ -771,6 +772,8 @@ public class AssessmentParts {
 			newPart.set(part);
 			this.parts.add(newPart);
 		}
+
+		return this;
 	}
 
 	// /**

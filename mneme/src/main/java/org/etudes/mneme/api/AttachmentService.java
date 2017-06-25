@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.fileupload.FileItem;
+import org.etudes.mneme.model.Reference;
 
 /**
  * AttachmentService manages attachments.

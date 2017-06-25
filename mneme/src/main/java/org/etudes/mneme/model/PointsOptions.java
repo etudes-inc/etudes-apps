@@ -1,10 +1,7 @@
 /**********************************************************************************
  *
- * Copyright (c) 2008, 2017 Etudes, Inc.
+ * Copyright (c) 2017 Etudes, Inc.
  * 
- * Portions completed before September 1, 2008
- * Copyright (c) 2007, 2008 The Regents of the University of Michigan & Foothill College, ETUDES Project
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,9 +18,35 @@
 
 package org.etudes.mneme.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
- * ReviewShowCorrect enumerates an assessment's review options for showing currect answer / answer key
+ * PointsOptions contains the assessment level points details.
  */
-public enum ReviewShowCorrect {
-	correct_only, incorrect_only, incorrect_key, no, yes
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class PointsOptions {
+
+	/** The assessment points value (overrides points set in parts) - used for offline (which have no parts) */
+	protected float points = 0f;
+
+	/** If the assessment needs to have points defined in the parts. */
+	protected boolean pointsReqired = true;
+
+	/**
+	 * Set from another.
+	 * 
+	 * @param other
+	 *            The other.
+	 * @return this (for chaining).
+	 */
+	public PointsOptions set(PointsOptions other) {
+		this.points = other.getPoints();
+		this.pointsReqired = other.isPointsReqired();
+
+		return this;
+	}
 }

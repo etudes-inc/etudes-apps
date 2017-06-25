@@ -812,8 +812,9 @@ public class Part {
 	 * 
 	 * @param other
 	 *            The other to copy.
+	 * @return this (for chaining).
 	 */
-	protected void set(Part other) {
+	public Part set(Part other) {
 		this.id = other.id;
 		this.presentation.set(other.presentation);
 		this.randomize = other.randomize;
@@ -831,5 +832,7 @@ public class Part {
 				getDetails().add(newPick);
 			}
 		}
+
+		return this;
 	}
 }

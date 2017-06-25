@@ -1,7 +1,10 @@
 /**********************************************************************************
  *
- * Copyright (c) 2017 Etudes, Inc.
+ * Copyright (c) 2008, 2017 Etudes, Inc.
  * 
+ * Portions completed before September 1, 2008
+ * Copyright (c) 2007, 2008 The Regents of the University of Michigan & Foothill College, ETUDES Project
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,38 +21,9 @@
 
 package org.etudes.mneme.model;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Changeable tracks changes for an object.
+ * AcceptSubmitStatus enumerates an assessment's ability to accept submissions at any point in time (from any qualified user).
  */
-@Data
-@NoArgsConstructor
-public class Changeable {
-	protected boolean changed = false;
-
-	/**
-	 * Construct from another.
-	 * 
-	 * @param other
-	 *            The other to copy.
-	 */
-	public Changeable(Changeable other) {
-		this.changed = other.isChanged();
-	}
-
-	/**
-	 * Clear the changed state.
-	 */
-	public void clearChanged() {
-		this.changed = false;
-	}
-
-	/**
-	 * Set the changed state.
-	 */
-	public void setChanged() {
-		this.changed = true;
-	}
+public enum AcceptSubmitStatus {
+	future, open, late, closed
 }

@@ -18,48 +18,6 @@
 
 package org.etudes.mneme.model;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.etudes.mneme.api.AcceptSubmitStatus;
-import org.etudes.mneme.api.Assessment;
-import org.etudes.mneme.api.AssessmentDates;
-import org.etudes.mneme.api.AssessmentGrading;
-import org.etudes.mneme.api.AssessmentParts;
-import org.etudes.mneme.api.AssessmentPassword;
-import org.etudes.mneme.api.AssessmentPermissionException;
-import org.etudes.mneme.api.AssessmentReview;
-import org.etudes.mneme.api.AssessmentService;
-import org.etudes.mneme.api.AssessmentSpecialAccess;
-import org.etudes.mneme.api.AttachmentService;
-import org.etudes.mneme.api.Attribution;
-import org.etudes.mneme.api.Part;
-import org.etudes.mneme.api.PartDetail;
-import org.etudes.mneme.api.Pool;
-import org.etudes.mneme.api.PoolDraw;
-import org.etudes.mneme.api.PoolService;
-import org.etudes.mneme.api.Presentation;
-import org.etudes.mneme.api.Question;
-import org.etudes.mneme.api.QuestionPick;
-import org.etudes.mneme.api.QuestionService;
-import org.etudes.mneme.api.SecurityService;
-import org.etudes.mneme.api.Submission;
-import org.etudes.mneme.api.SubmissionService;
-import org.etudes.mneme.wapi.MnemeAPI;
-import org.etudes.util.Different;
-import org.sakaiproject.entity.api.Reference;
-import org.sakaiproject.entity.cover.EntityManager;
-import org.sakaiproject.i18n.InternationalizedMessages;
-import org.sakaiproject.user.api.User;
-import org.sakaiproject.user.api.UserDirectoryService;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -71,1612 +29,645 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Assessment {
+
+	/**
+	 * Type enumerates the different assessment types.
+	 */
+	public enum Type {
+		assignment(1), offline(3), survey(2), test(0);
+
+		private final int sortOrder;
+
+		private Type(int sortOrder) {
+			this.sortOrder = Integer.valueOf(sortOrder);
+		}
+
+		public Integer getSortValue() {
+			return sortOrder;
+		}
+	}
+
+	/** Options related to issuing certificates. */
+	protected CertificateOptions certificateOptions = new CertificateOptions();
+
 	/** The assessment context - where it belongs in the LMS. */
 	protected String context = "";
 
 	/** Who and when created. */
 	protected Attribution createdBy = null;
 
+	/** Options related to delivery. */
 	protected DeliveryOptions deliveryOptions = new DeliveryOptions();
 
-	/** Grading details. */
-	protected AssessmentGrading grading = null;
+	/** Options related to grading. */
+	protected GradingOptions gradingOptions = null;
 
+	/** Internal ID. */
 	protected String id = null;
-
-	/** ??? */
-	protected Integer minScore = null;
-
-	/** If the minScore is set ??? */
-	protected boolean minScoreSet = false;
 
 	/** Last changed by and when. */
 	protected Attribution modifiedBy = null;
 
-	/** If the assessment needs to have points defined in the parts. */
-	protected boolean needsPoints = true;
-
-	/** If a notification should be sent when the assessment closes... ??? */
-	protected boolean notifyEval = false;
+	/** Options related to notifications at assessment close. */
+	protected NotificationOptions notificationOptions = new NotificationOptions();
 
 	/** The assessment parts. */
-	protected AssessmentParts parts = null;
+	protected Parts parts = new Parts();
 
-	/** The assessment points value ... ??? */
-	protected Float points = null;
+	/** Options related to assessment level points. */
+	protected PointsOptions pointsOptions = new PointsOptions();
 
 	/** The auto-pool for this assessment. */
 	protected String poolId = null;
 
 	/** The presentation for the assessment. */
-	protected Presentation presentation = null;
-
-	/** Who to send the assessment results to. */
-	protected String resultsEmail = null;
+	protected Presentation presentation = new Presentation();
 
 	/** Assessment review options. */
-	protected AssessmentReview review = null;
+	protected ReviewOptions reviewOptions = new ReviewOptions();
 
 	/** The schedule. */
-	protected AssessmentDates schedule = null;
+	protected Schedule schedule = new Schedule();
 
-	/** Special access to the assesssment. */
-	protected AssessmentSpecialAccess specialAccess = null;
+	/** Special access to the assessment. */
+	protected SpecialAccess specialAccess = new SpecialAccess();
 
-	/** Our logger. */
-	// private static Log M_log = LogFactory.getLog(Assessment.class);
-
+	/** Details about the assessment status that change over time. */
 	protected AssessmentStatus status = new AssessmentStatus();
 
 	/** Some ??? other ??? presentation ??? */
-	protected Presentation submitPresentation = null;
+	// protected Presentation submitPresentation = null;
 
 	/** Assessment title. */
 	protected String title = "";
 
 	/** Assessment type. */
-	protected AssessmentType type = AssessmentType.test;
-
-	/**
-	 * Construct
-	 */
-	public Assessment(AssessmentService assessmentService, PoolService poolService, QuestionService questionService, SubmissionService submissionService,
-			SecurityService securityService, UserDirectoryService userDirectoryService, InternationalizedMessages messages) {
-		this.assessmentService = assessmentService;
-		this.poolService = (PoolServiceImpl) poolService;
-		this.submissionService = submissionService;
-		this.questionService = questionService;
-		this.messages = messages;
-		this.submitPresentation = new Presentation(this.changed);
-		this.userDirectoryService = userDirectoryService;
-
-		this.createdBy = new Attribution(this.changed);
-		this.dates = new AssessmentDates(this, this.changed);
-		this.grading = new AssessmentGrading(this.changed);
-		this.modifiedBy = new Attribution(this.changed);
-		this.parts = new AssessmentParts(this, questionService, submissionService, poolService, this.changed, this.messages);
-		this.password = new AssessmentPassword(this.changed);
-		this.presentation = new Presentation(this.changed);
-		this.review = new AssessmentReview(this, this.changed);
-		this.securityService = securityService;
-		this.specialAccess = new AssessmentSpecialAccess(this, this.changed, this.securityService, this.userDirectoryService);
-	}
-
-	/**
-	 * Construct as a deep copy of another
-	 */
-	protected Assessment(Assessment other) {
-		set(other);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean equals(Object obj) {
-		// two Assessments are equals if they have the same id
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getId() == null)
-			return false;
-		if (!(obj instanceof Assessment))
-			return false;
-		Assessment a = (Assessment) obj;
-		if (a.getId() == null)
-			return false;
-		return this.getId().equals(a.getId());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public AcceptSubmitStatus getAcceptSubmitStatus() {
-		if (this.archived)
-			return AcceptSubmitStatus.closed;
-		if (!this.published)
-			return AcceptSubmitStatus.closed;
-		if (getFrozen())
-			return AcceptSubmitStatus.closed;
-
-		Date now = new Date();
-
-		// before open date, we are future (not yet open)
-		if ((this.dates.getOpenDate() != null) && (now.before(this.dates.getOpenDate()))) {
-			return AcceptSubmitStatus.future;
-		}
-
-		// closed if we are after a defined getSubmitUntilDate
-		if ((this.dates.getSubmitUntilDate() != null) && (now.after(this.dates.getSubmitUntilDate()))) {
-			return AcceptSubmitStatus.closed;
-		}
-
-		// after due date, we are late
-		if ((this.dates.getDueDate() != null) && (now.after(this.dates.getDueDate()))) {
-			return AcceptSubmitStatus.late;
-		}
-
-		// otherwise, we are open
-		return AcceptSubmitStatus.open;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getAllowedPoints() {
-		return Boolean.valueOf(this.type != AssessmentType.survey);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getAnonymous() {
-		// surveys are always anon.
-		if (this.type == AssessmentType.survey)
-			return Boolean.TRUE;
-
-		// otherwise use setting
-		return getGrading().getAnonymous();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getArchived() {
-		return this.archived;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Reference getAsmtStatsReference() {
-		Reference ref = EntityManager.newReference(
-				"/mneme/" + AttachmentService.DOWNLOAD + "/" + AttachmentService.ASMT_STATS + "/" + this.getContext() + "/" + this.getId() + ".xls");
-		return ref;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getContext() {
-		return this.context;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Attribution getCreatedBy() {
-		return createdBy;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public AssessmentDates getDates() {
-		return this.dates;
-	}
-
-	public Date getEvaluationSent() {
-		return evaluationSent;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Reference getExportSummaryReference() {
-		Reference ref = EntityManager.newReference(
-				"/mneme/" + AttachmentService.DOWNLOAD + "/" + AttachmentService.EXPORT_SUMMARY + "/" + this.getContext() + "/" + this.getId() + ".xls");
-		return ref;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getFormalCourseEval() {
-		return this.formalCourseEval;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getFrozen() {
-		// formal evals are automatically considered frozen once their due date is passed
-		if (getFormalCourseEval() && (getDates().getSubmitUntilDate() != null) && getPublished()) {
-			if (new Date().after(getDates().getSubmitUntilDate()))
-				return Boolean.TRUE;
-		}
-
-		return this.frozen;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getGradebookIntegration() {
-		// if not set for gb
-		if (!this.grading.getGradebookIntegration())
-			return Boolean.FALSE;
-
-		// set for gb, but...
-
-		// not if we don't support points
-		if (!getHasPoints())
-			return Boolean.FALSE;
-
-		// or don't have points
-		if (!(getPoints().floatValue() > 0f))
-			return Boolean.FALSE;
-
-		return Boolean.TRUE;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public AssessmentGrading getGrading() {
-		return this.grading;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getHasMultipleTries() {
-		if ((getTries() == null) || (getTries() > 1)) {
-			return Boolean.TRUE;
-		}
-
-		return Boolean.FALSE;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getHasPoints() {
-		// no points if not allowed or if not needed
-		if (!getAllowedPoints())
-			return Boolean.FALSE;
-
-		// check for needs only if set
-		if (getNeedsPoints() != null) {
-			if (!getNeedsPoints())
-				return Boolean.FALSE;
-		}
-
-		return Boolean.TRUE;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getHasTimeLimit() {
-		return Boolean.valueOf(this.timeLimit != null);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getHasTriesLimit() {
-		return Boolean.valueOf(this.tries != null);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getHasUnscoredSubmissions() {
-		return this.submissionService.getAssessmentHasUnscoredSubmissions(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getHiddenTillOpen() {
-		Date now = new Date();
-		// if in future and hidden
-		if ((this.dates.getHideUntilOpen()) && (this.dates.getOpenDate() != null) && now.before(this.dates.getOpenDate())) {
-			return Boolean.TRUE;
-		}
-		return Boolean.FALSE;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getId() {
-		return this.id;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getIsChanged() {
-		return this.changed.getChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getIsLive() {
-		return this.live;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getIsLocked() {
-		return this.locked;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getIsPointsValid() {
-		// only if we require points
-		if (this.getHasPoints()) {
-			if (getType() == AssessmentType.offline) {
-				if (getPoints().floatValue() <= 0) {
-					return Boolean.FALSE;
-				}
-			} else {
-				// if we have questions
-				if (this.getParts().getNumQuestions() > 0) {
-					if (this.getParts().getTotalPoints().floatValue() <= 0) {
-						return Boolean.FALSE;
-					}
-				}
-			}
-		}
-
-		return Boolean.TRUE;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getIsSingleQuestion() {
-		if (this.parts.getNumQuestions().intValue() == 1) {
-			return Boolean.TRUE;
-		}
-
-		return Boolean.FALSE;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getIsValid() {
-		// must have a title
-		if (getTitle().length() == 0)
-			return Boolean.FALSE;
-
-		// dates valid
-		if (!this.dates.getIsValid())
-			return Boolean.FALSE;
-
-		// parts valid
-		if (!this.parts.getIsValid())
-			return Boolean.FALSE;
-
-		// grading valid
-		if (!this.grading.getIsValid())
-			return Boolean.FALSE;
-
-		// points if needed
-		if (!this.getIsPointsValid())
-			return Boolean.FALSE;
-
-		// formal course evaluations must have the results email set
-		if (this.getFormalCourseEval()) {
-			if (this.getResultsEmail() == null)
-				return Boolean.FALSE;
-		}
-		if (this.getResultsEmail() != null && this.getResultsEmail().length() > 255) {
-			setResultsEmail(this.getResultsEmail().substring(0, 255));
-			return Boolean.FALSE;
-		}
-		if (this.getResultsEmail() != null && !isEmailValid(this.getResultsEmail()))
-			return Boolean.FALSE;
-
-		// results email feature needs a due or accept until date
-		if (this.getResultsEmail() != null && isEmailValid(this.getResultsEmail())) {
-			if ((this.dates.getDueDate() == null) && (this.dates.getAcceptUntilDate() == null))
-				return Boolean.FALSE;
-		}
-
-		// FCE's notify-on-open feature needs an open date
-		if (this.getFormalCourseEval() && this.notifyEval && this.dates.getOpenDate() == null) {
-			return Boolean.FALSE;
-		}
-
-		return Boolean.TRUE;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Reference getItemAnalysisReference() {
-		Reference ref = EntityManager.newReference(
-				"/mneme/" + AttachmentService.DOWNLOAD + "/" + AttachmentService.ITEM_ANALYSIS + "/" + this.getContext() + "/" + this.getId() + ".xls");
-		return ref;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Integer getMinScore() {
-		return this.minScore;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getMinScoreSet() {
-		return this.minScoreSet;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getMint() {
-		return this.mint;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Attribution getModifiedBy() {
-		return modifiedBy;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getNeedsPoints() {
-		return this.needsPoints;
-	}
-
-	/**
-	 * @return true if we have a change that would need a re-score of submissions.
-	 */
-	public boolean getNeedsRescore() {
-		return this.needsRescore;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getNotifyEval() {
-		return this.notifyEval;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public AssessmentParts getParts() {
-		return this.parts;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public AssessmentPassword getPassword() {
-		return this.password;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Float getPoints() {
-		if (this.type == AssessmentType.offline) {
-			return this.points == null ? Float.valueOf(0f) : this.points;
-		}
-
-		else {
-			return this.parts.getTotalPoints();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Pool getPool() {
-		// see if the pool has been deleted - if so we will make a new one
-		if (this.poolId != null) {
-			Pool pool = this.poolService.getPool(this.poolId);
-			if (pool == null) {
-				this.poolId = null;
-			}
-		}
-
-		if (this.poolId == null) {
-			try {
-				Pool pool = this.poolService.newPool(this.context);
-				this.poolId = pool.getId();
-				if (this.title.length() > 0) {
-					pool.setTitle(this.title);
-				}
-				// Note: if we don't set a >0 length title, the pool will have no changes, remain mint and disappear
-				else {
-					pool.setTitle(this.messages.getFormattedMessage("assessment-pool", null));
-				}
-				this.poolService.savePool(pool);
-				this.changed.setChanged();
-			} catch (AssessmentPermissionException e) {
-				M_log.warn("getPool: " + e.toString());
-			}
-		}
-
-		return this.poolService.getPool(this.poolId);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getPoolId() {
-		return this.poolId;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Presentation getPresentation() {
-		return this.presentation;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getPublished() {
-		return this.published;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public QuestionGrouping getQuestionGrouping() {
-		return this.questionGrouping;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getRandomAccess() {
-		return this.randomAccess;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getRequireHonorPledge() {
-		return this.honorPledge;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getResultsEmail() {
-		return this.resultsEmail;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Date getResultsSent() {
-		return this.resultsSent;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public AssessmentReview getReview() {
-		return this.review;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public List<Float> getScores() {
-		return submissionService.getAssessmentScores(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getShowHints() {
-		return this.showHints;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getShowModelAnswer() {
-		return this.showModelAnswer;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Boolean getShuffleChoicesOverride() {
-		return this.shuffleChoicesOverride;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public AssessmentSpecialAccess getSpecialAccess() {
-		return this.specialAccess;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Submission getSubmissionContext() {
-		return this.submissionContext;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Presentation getSubmitPresentation() {
-		return this.submitPresentation;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public List<User> getSubmitUsers() {
-		return this.assessmentService.getSubmitUsers(this.getContext());
-	}
-
-	public Long getTimeLimit() {
-		return this.timeLimit;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public String getTitle() {
-		return this.title;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Integer getTries() {
-		return this.tries;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public AssessmentType getType() {
-		return this.type;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public int hashCode() {
-		return getId() == null ? "null".hashCode() : getId().hashCode();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void initType(AssessmentType type) {
-		if (type == null)
-			throw new IllegalArgumentException();
-
-		this.type = type;
-		this.typeWas = type;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean isEmailValid(String emailAddr) {
-		Pattern pattern;
-		Matcher matcher;
-
-		String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-
-		pattern = Pattern.compile(EMAIL_PATTERN);
-
-		if (emailAddr == null || emailAddr.trim().length() == 0)
-			return false;
-		if (!emailAddr.contains(",")) {
-			matcher = pattern.matcher(emailAddr.trim());
-			return matcher.matches();
-		} else {
-			List<String> emailList = Arrays.asList(emailAddr.split(","));
-			for (String emailStr : emailList) {
-				matcher = pattern.matcher(emailStr.trim());
-				if (!matcher.matches())
-					return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setArchived(Boolean archived) {
-		if (archived == null)
-			throw new IllegalArgumentException();
-		if (this.archived.equals(archived))
-			return;
-
-		this.archived = archived;
-
-		// if now archived, set the date, and un-publish
-		if (this.archived) {
-			((AssessmentDates) this.dates).archived = new Date();
-			this.published = Boolean.FALSE;
-		}
-
-		// else clear it
-		else {
-			((AssessmentDates) this.dates).archived = null;
-		}
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setContext(String context) {
-		if (context == null)
-			context = "";
-		if (this.context.equals(context))
-			return;
-
-		this.context = context;
-
-		this.changed.setChanged();
-	}
-
-	public void setEvaluationSent(Date date) {
-		if (!Different.different(this.evaluationSent, date))
-			return;
-
-		this.evaluationSent = date;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setFormalCourseEval(Boolean setting) {
-		// for null, use the default FALSE
-		if (setting == null)
-			setting = Boolean.FALSE;
-		if (this.formalCourseEval.equals(setting))
-			return;
-
-		// we need special permission (fail quietly) to set this to true
-		if (setting && !assessmentService.allowSetFormalCourseEvaluation(getContext()))
-			return;
-
-		this.formalCourseEval = setting;
-
-		// this is a change that cannot be made to locked assessments
-		this.lockedChanged = Boolean.TRUE;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setFrozen() {
-		if (this.frozen)
-			return;
-
-		this.frozen = Boolean.TRUE;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setHasTimeLimit(Boolean hasTimeLimit) {
-		if (hasTimeLimit == null)
-			throw new IllegalArgumentException();
-
-		if ((!hasTimeLimit) && (this.timeLimit != null)) {
-			this.timeLimit = null;
-
-			this.changed.setChanged();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setHasTriesLimit(Boolean hasTriesLimit) {
-		if (hasTriesLimit == null)
-			throw new IllegalArgumentException();
-
-		if ((!hasTriesLimit) && (this.tries != null)) {
-			this.tries = null;
-
-			this.changed.setChanged();
-
-			// this is a change that cannot be made to locked assessments if set to a formal course evaluation
-			if (this.formalCourseEval)
-				this.lockedChanged = Boolean.TRUE;
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setMinScore(Integer minScore) {
-		this.minScore = minScore;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setMinScoreSet(Boolean setting) {
-		if (setting == null)
-			return;
-		if (this.minScoreSet.equals(setting))
-			return;
-
-		this.minScoreSet = setting;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setNeedsPoints(Boolean needsPoints) {
-		if (needsPoints == null)
-			throw new IllegalArgumentException();
-		if (this.needsPoints.equals(needsPoints))
-			return;
-
-		this.needsPoints = needsPoints;
-
-		this.changed.setChanged();
-		this.setNeedsRescore();
-	}
-
-	/**
-	 * Set that we need a re-score.
-	 */
-	public void setNeedsRescore() {
-		needsRescore = true;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setNotifyEval(Boolean setting) {
-		// for null, use the default FALSE
-		if (setting == null)
-			setting = Boolean.FALSE;
-		if (this.notifyEval.equals(setting))
-			return;
-
-		this.notifyEval = setting;
-
-		// this is a change that cannot be made to locked assessments
-		this.lockedChanged = Boolean.TRUE;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setPoints(Float points) {
-		// round away bogus decimals
-		float val = 0f;
-		if (points != null)
-			val = points.floatValue();
-		val = Math.round(val * 100.0f) / 100.0f;
-		Float valF = Float.valueOf(val);
-
-		if (Different.different(valF, this.points)) {
-			this.points = valF;
-			this.changed.setChanged();
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setPool(Pool pool) {
-		if (pool == null)
-			throw new IllegalArgumentException();
-
-		// just ignore if already set
-		if (this.poolId != null)
-			return;
-
-		this.poolId = pool.getId();
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setPublished(Boolean published) {
-		if (published == null)
-			throw new IllegalArgumentException();
-		if (this.published.equals(published))
-			return;
-
-		// ignore a request to publish if not valid
-		if (published) {
-			if (!getIsValid())
-				return;
-		}
-
-		this.published = published;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setQuestionGrouping(QuestionGrouping value) {
-		if (value == null)
-			return;
-		if (this.questionGrouping.equals(value))
-			return;
-
-		this.questionGrouping = value;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setRandomAccess(Boolean setting) {
-		if (setting == null)
-			throw new IllegalArgumentException();
-		if (this.randomAccess.equals(setting))
-			return;
-
-		this.randomAccess = setting;
-
-		// strict order needs by question
-		if (!this.randomAccess) {
-			setQuestionGrouping(QuestionGrouping.question);
-		}
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setRequireHonorPledge(Boolean honorPledge) {
-		if (honorPledge == null)
-			throw new IllegalArgumentException();
-		if (this.honorPledge.equals(honorPledge))
-			return;
-
-		this.honorPledge = honorPledge;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setResultsEmail(String setting) {
-		if (!Different.different(this.resultsEmail, setting))
-			return;
-
-		this.resultsEmail = setting;
-
-		// this is a change that cannot be made to locked assessments if set to a formal course evaluation
-		if (this.formalCourseEval)
-			this.lockedChanged = Boolean.TRUE;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setResultsSent(Date date) {
-		if (!Different.different(this.resultsSent, date))
-			return;
-
-		this.resultsSent = date;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setShowHints(Boolean showHints) {
-		if (showHints == null)
-			throw new IllegalArgumentException();
-		if (this.showHints.equals(showHints))
-			return;
-
-		this.showHints = showHints;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setShowModelAnswer(Boolean show) {
-		if (show == null)
-			throw new IllegalArgumentException();
-		if (this.showModelAnswer.equals(show))
-			return;
-
-		this.showModelAnswer = show;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setShuffleChoicesOverride(Boolean setting) {
-		if (setting == null)
-			throw new IllegalArgumentException();
-		if (this.shuffleChoicesOverride.equals(setting))
-			return;
-
-		this.shuffleChoicesOverride = setting;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setTimeLimit(Long limit) {
-		// minimum of one minute
-		if ((limit != null) && (limit.longValue() < 60000l))
-			limit = new Long(60000l);
-
-		if (!Different.different(this.timeLimit, limit))
-			return;
-
-		this.timeLimit = limit;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setTitle(String title) {
-		// massage the title
-		if (title != null) {
-			title = title.trim();
-			if (title.length() > 255)
-				title = title.substring(0, 255);
-		} else {
-			title = "";
-		}
-
-		if (this.title.equals(title))
-			return;
-
-		this.title = title;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setTries(Integer count) {
-		// if < 1, set to 1
-		if ((count != null) && (count.intValue() < 1)) {
-			count = Integer.valueOf(1);
-		}
-
-		if (!Different.different(count, this.tries))
-			return;
-
-		this.tries = count;
-
-		// this is a change that cannot be made to locked assessments if set to a formal course evaluation
-		if (this.formalCourseEval)
-			this.lockedChanged = Boolean.TRUE;
-
-		this.changed.setChanged();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setType(AssessmentType type) {
-		if (type == null)
-			throw new IllegalArgumentException();
-		if (this.type.equals(type))
-			return;
-
-		if (this.type == AssessmentType.survey) {
-			// this is a change that cannot be made to live tests
-			this.lockedChanged = Boolean.TRUE;
-		}
-
-		this.type = type;
-		this.changed.setChanged();
-
-		// Note: for the settings that automatically get set when the type changes, see the AsessmentServiceImpl.java's saveAssessment() method -ggolden
-	}
-
-	/**
-	 * Clear the changed settings.
-	 */
-	protected void clearChanged() {
-		this.changed.clearChanged();
-		this.lockedChanged = Boolean.FALSE;
-	}
-
-	/**
-	 * Clear the mint setting.
-	 */
-	protected void clearMint() {
-		this.mint = Boolean.FALSE;
-	}
-
-	/**
-	 * Check if the archived was changed.
-	 * 
-	 * @return TRUE if changed, FALSE if not.
-	 */
-	protected Boolean getArchivedChanged() {
-		Boolean rv = Boolean.valueOf(!this.archived.equals(this.archivedWas));
-		return rv;
-	}
-
-	/**
-	 * Check if any changes have been made that are not allowed if the test is locked.
-	 * 
-	 * @return TRUE if any changes that are not allowed if locked have been made, FALSE if not.
-	 */
-	protected Boolean getIsLockedChanged() {
-		return this.lockedChanged;
-	}
-
-	/**
-	 * @return The original type, before (potentially) being modified.
-	 */
-	protected AssessmentType getOrigType() {
-		return this.typeWas;
-	}
-
-	/**
-	 * Check if the points setting was changed.
-	 * 
-	 * @return TRUE if changed, FALSE if not.
-	 */
-	protected Boolean getPointsChanged() {
-		Boolean rv = Boolean.valueOf(Different.different(this.points, this.pointsWas));
-		return rv;
-	}
-
-	/**
-	 * Check if the published setting was changed.
-	 * 
-	 * @return TRUE if changed, FALSE if not.
-	 */
-	protected Boolean getPublishedChanged() {
-		Boolean rv = Boolean.valueOf(!this.published.equals(this.publishedWas));
-		return rv;
-	}
-
-	/**
-	 * Check if the title was changed.
-	 * 
-	 * @return TRUE if changed, FALSE if not.
-	 */
-	protected Boolean getTitleChanged() {
-		Boolean rv = Boolean.valueOf(!this.title.equals(this.titleWas));
-		return rv;
-	}
-
-	/**
-	 * Check if the type was changed.
-	 * 
-	 * @return TRUE if changed, FALSE if not.
-	 */
-	protected Boolean getTypeChanged() {
-		Boolean rv = Boolean.valueOf(!this.type.equals(this.typeWas));
-		return rv;
-	}
-
-	/**
-	 * Establish the archived setting.
-	 * 
-	 * @param archived
-	 *            The archived setting.
-	 */
-	protected void initArchived(Boolean archived) {
-		this.archived = archived;
-		this.archivedWas = archived;
-	}
-
-	/**
-	 * Init the date that the evaluation email was sent.
-	 * 
-	 * @param date
-	 *            The date that the evalation email was sent.
-	 */
-	protected void initEvalSent(Date date) {
-		this.evaluationSent = date;
-	}
-
-	/**
-	 * Init the formal course evaluation setting.
-	 * 
-	 * @param setting
-	 *            The formal course evaluation setting.
-	 */
-	protected void initFormalCourseEval(Boolean setting) {
-		// for null, use the default FALSE
-		if (setting == null)
-			setting = Boolean.FALSE;
-
-		this.formalCourseEval = setting;
-	}
-
-	/**
-	 * Establish the frozen setting.
-	 * 
-	 * @param frozen
-	 *            The frozen setting.
-	 */
-	protected void initFrozen(Boolean frozen) {
-		if (frozen == null)
-			frozen = Boolean.FALSE;
-		this.frozen = frozen;
-	}
-
-	/**
-	 * Initialize the id property.
-	 * 
-	 * @param id
-	 *            The id property.
-	 */
-	protected void initId(String id) {
-		this.id = id;
-	}
-
-	/**
-	 * Establish the live setting.
-	 * 
-	 * @param live
-	 *            The live setting.
-	 */
-	protected void initLive(Boolean live) {
-		this.live = live;
-	}
-
-	/**
-	 * Establish the locked setting.
-	 * 
-	 * @param locked
-	 *            The locked setting.
-	 */
-	protected void initLocked(Boolean locked) {
-		this.locked = locked;
-	}
-
-	/**
-	 * Establish the mint setting.
-	 * 
-	 * @param mint
-	 *            The mint setting.
-	 */
-	protected void initMint(Boolean mint) {
-		this.mint = mint;
-	}
-
-	/**
-	 * Establish the needsPoints setting.
-	 * 
-	 * @param needsPoints
-	 *            The needsPoints setting.
-	 */
-	protected void initNeedsPoints(Boolean needsPoints) {
-		// if null, use the default
-		if (needsPoints == null) {
-			this.needsPoints = Boolean.TRUE;
-		}
-
-		else {
-			this.needsPoints = needsPoints;
-		}
-	}
-
-	/**
-	 * Establish the needsRescore setting.
-	 * 
-	 * @param needsRescore
-	 *            The needsRescore setting.
-	 */
-	protected void initNeedsRescore(boolean needsRescore) {
-		this.needsRescore = needsRescore;
-	}
-
-	/**
-	 * Init the notify course evaluation setting.
-	 * 
-	 * @param setting
-	 *            The notify course evaluation setting.
-	 */
-	protected void initNotifyEval(Boolean setting) {
-		// for null, use the default FALSE
-		if (setting == null)
-			setting = Boolean.FALSE;
-
-		this.notifyEval = setting;
-	}
-
-	/**
-	 * Establish the points value.
-	 * 
-	 * @param points
-	 *            The points.
-	 */
-	protected void initPoints(Float points) {
-		this.points = points;
-		this.pointsWas = points;
-	}
-
-	/**
-	 * Initialize the poolId field.
-	 * 
-	 * @param poolId
-	 *            The poolId.
-	 */
-	protected void initPool(String poolId) {
-		this.poolId = poolId;
-	}
-
-	/**
-	 * Establish the published setting.
-	 * 
-	 * @param published
-	 *            The published setting.
-	 */
-	protected void initPublished(Boolean published) {
-		this.published = published;
-		this.publishedWas = published;
-	}
-
-	/**
-	 * Init the email address for sending results to.
-	 * 
-	 * @param setting
-	 *            The email address string (comma separated email addresses) for sending results to.
-	 */
-	protected void initResultsEmail(String setting) {
-		this.resultsEmail = setting;
-	}
-
-	/**
-	 * Init the date that the last results email was sent.
-	 * 
-	 * @param date
-	 *            The date that the last results email was sent.
-	 */
-	protected void initResultsSent(Date date) {
-		this.resultsSent = date;
-	}
-
-	/**
-	 * Establish the show model answer setting.
-	 * 
-	 * @param show
-	 *            The show model answer setting.
-	 */
-	protected void initShowModelAnswer(Boolean show) {
-		// if null, use the default
-		if (show == null) {
-			this.showModelAnswer = Boolean.TRUE;
-		}
-
-		else {
-			this.showModelAnswer = show;
-		}
-	}
-
-	/**
-	 * Establish the shuffleChoicesOverride setting.
-	 * 
-	 * @param shuffleChoicesOverride
-	 *            The shuffleChoicesOverride setting.
-	 */
-	protected void initShuffleChoicesOverride(Boolean shuffleChoicesOverride) {
-		// if null, use the default
-		if (shuffleChoicesOverride == null) {
-			this.shuffleChoicesOverride = Boolean.FALSE;
-		}
-
-		else {
-			this.shuffleChoicesOverride = shuffleChoicesOverride;
-		}
-	}
-
-	/**
-	 * Initialize the submission context.
-	 * 
-	 * @param submission
-	 *            The submission context.
-	 */
-	protected void initSubmissionContext(Submission submission) {
-		this.submissionContext = submission;
-	}
-
-	/**
-	 * Establish the title.
-	 * 
-	 * @param title
-	 *            The title;
-	 */
-	protected void initTitle(String title) {
-		if (title == null)
-			title = "";
-		this.title = title;
-		this.titleWas = title;
-	}
-
-	/**
-	 * Lock the assessment, locking down the dependencies (pools and questions).
-	 */
-	protected void lock() {
-		if (this.locked)
-			return;
-		initLocked(Boolean.TRUE);
-
-		Map<String, Pool> histories = new HashMap<String, Pool>();
-		Map<String, Map<String, String>> oldToNews = new HashMap<String, Map<String, String>>();
-
-		// make a history copy of all used pools and questions
-		// switch over the parts
-		// make sure questions from the same pool end up in the same pool
-
-		for (Part part : this.parts.parts) {
-			((Part) part).changed = true;
-
-			for (PartDetail detail : part.getDetails()) {
-				if (detail instanceof PoolDraw) {
-					PoolDraw draw = (PoolDraw) detail;
-
-					// if we have not yet made a history for this pool, do so
-					Pool history = histories.get(draw.getPoolId());
-					if (history == null) {
-						Map<String, String> oldToNew = new HashMap<String, String>();
-						history = this.poolService.makePoolHistory(draw.getPool(), oldToNew);
-						histories.put(draw.getPoolId(), history);
-						oldToNews.put(draw.getPoolId(), oldToNew);
-					}
-					draw.setPool(history);
-				} else if (detail instanceof QuestionPick) {
-					QuestionPick pick = (QuestionPick) detail;
-
-					Question q = this.questionService.getQuestion(pick.getQuestionId());
-					if (q != null) {
-						// make sure we have this question's complete pool
-						Pool history = histories.get(q.getPool().getId());
-						if (history == null) {
-							Map<String, String> oldToNew = new HashMap<String, String>();
-							history = this.poolService.makePoolHistory(q.getPool(), oldToNew);
-							histories.put(q.getPool().getId(), history);
-							oldToNews.put(q.getPool().getId(), oldToNew);
-						}
-
-						// get the mapping for this pool
-						Map<String, String> oldToNew = oldToNews.get(q.getPool().getId());
-						String historicalQid = oldToNew.get(q.getId());
-						if (historicalQid != null) {
-							pick.setQuestionId(historicalQid);
-						}
-					}
-				}
-			}
-		}
-	}
+	protected Type type = Type.test;
+
+	// /**
+	// * Get the submit-able status for the assessment - this indicates if we are expecting submissions now.
+	// *
+	// * @return The submit-able status
+	// */
+	// public AcceptSubmitStatus getAcceptSubmitStatus() {
+	// if (this.getStatus().isArchived())
+	// return AcceptSubmitStatus.closed;
+	// if (!this.getStatus().isPublished())
+	// return AcceptSubmitStatus.closed;
+	// if (isFrozen())
+	// return AcceptSubmitStatus.closed;
+	//
+	// final Date now = new Date();
+	//
+	// // before open date, we are future (not yet open)
+	// if ((this.getSchedule().getOpen() != null) && (now.before(this.getSchedule().getOpen()))) {
+	// return AcceptSubmitStatus.future;
+	// }
+	//
+	// // closed if we are after a defined getSubmitUntilDate
+	// if ((this.getSchedule().getSubmitUntil() != null) && (now.after(this.getSchedule().getSubmitUntil()))) {
+	// return AcceptSubmitStatus.closed;
+	// }
+	//
+	// // after due date, we are late
+	// if ((this.getSchedule().getDue() != null) && (now.after(this.getSchedule().getDue()))) {
+	// return AcceptSubmitStatus.late;
+	// }
+	//
+	// // otherwise, we are open
+	// return AcceptSubmitStatus.open;
+	// }
+
+	// /**
+	// * @return If the assessment, based on type, allows points.
+	// */
+	// public boolean isAllowedPoints() {
+	// return this.type != AssessmentType.survey;
+	// }
+
+	// /**
+	// * Check if student identities are invisible to the grader when grading.<br />
+	// * Use this instead of the AssessmentGrading version for logic, use the other for editing settings.
+	// *
+	// * @return TRUE if student identities are invisible to the grader when grading, FALSE if not.
+	// */
+	// public boolean isAnonymous() {
+	//
+	// // surveys are always anon.
+	// if (this.type == AssessmentType.survey)
+	// return true;
+	//
+	// // otherwise use setting
+	// return getGrading().isAnonymous();
+	// }
+
+	// /**
+	// * @return If the assessment is frozen, adding in special rules concerning formal course evaluations
+	// */
+	// public boolean isFrozen() {
+	//
+	// // formal evals are automatically considered frozen once their due date is passed
+	// if (this.getStatus().isFormalCourseEval() && (getSchedule().getSubmitUntil() != null) && getStatus().isPublished()) {
+	//
+	// final Date now = new Date();
+	// if (now.after(getSchedule().getSubmitUntil()))
+	// return true;
+	// }
+	//
+	// return this.getStatus().isFrozen();
+	// }
+
+	// /**
+	// * Check if grades are to be sent to the Gradebook application, considering type, points, hasPoints, and the grades setting.
+	// *
+	// * @return TRUE if the assessment's grades are to be placed into the Gradebook, FALSE if not.
+	// */
+	// public boolean isForGradebook() {
+	//
+	// // if not set for gb
+	// if (!this.getGrading().isForGradebook())
+	// return false;
+	//
+	// // set for gb, but...
+	//
+	// // not if we don't support points
+	// if (!isAllowedPoints())
+	// return false;
+	//
+	// // or don't have points
+	// if (getPoints() <= 0f)
+	// return false;
+	//
+	// return true;
+	// }
+
+	// /**
+	// * Are multiple submissions allowed?
+	// *
+	// * @return TRUE if multiple submissions are allowed, FALSE if not.
+	// */
+	// public boolean isTriesMultiple() {
+	// return ((this.getDeliveryOptions().getTries() == null) || (this.getDeliveryOptions().getTries().intValue() > 1));
+	// }
+
+	// /**
+	// * Check if the assessment supports points, or if it does not. Survey type assessments, for example, do not support points.
+	// *
+	// * @return TRUE if the question supports points, FALSE if it does not.
+	// */
+	// public boolean isForPoints() {
+	//
+	// // not for points if points are not allowed
+	// if (!isAllowedPoints()) {
+	// return false;
+	// }
+	//
+	// // not for points if set to not need points
+	// if (!isPointsReqired()) {
+	// return false;
+	// }
+	//
+	// // TODO: do we need to check if there are actually points?
+	//
+	// return true;
+	// }
+
+	// /**
+	// * @return If the time limit is set.
+	// */
+	// public boolean isTimeLimited() {
+	// return this.getDeliveryOptions().getTimeLimit() != null;
+	// }
+
+	// /**
+	// * @return If the tries limit is set.
+	// */
+	// public Boolean getHasTriesLimit() {
+	// return this.getDeliveryOptions().getTries() != null;
+	// }
+
+	// /**
+	// * {@inheritDoc}
+	// */
+	// public Boolean isCurrentlyHiddenUntilOpen() {
+	// final Date now = new Date();
+	//
+	// // it is currently hidden (until open) if so set, and the open date is in the future
+	// return (this.getSchedule().isHideUntilOpen() && (this.getSchedule().getOpen() != null) && now.before(this.getSchedule().getOpen()));
+	// }
+
+	// /**
+	// * {@inheritDoc}
+	// */
+	// public Boolean getIsPointsValid() {
+	// // only if we require points
+	// if (this.isForPoints()) {
+	// if (getType() == AssessmentType.offline) {
+	// if (getPoints().floatValue() <= 0) {
+	// return Boolean.FALSE;
+	// }
+	// } else {
+	// // if we have questions
+	// if (this.getParts().getNumQuestions() > 0) {
+	// if (this.getParts().getTotalPoints().floatValue() <= 0) {
+	// return Boolean.FALSE;
+	// }
+	// }
+	// }
+	// }
+	//
+	// return Boolean.TRUE;
+	// }
+
+	// /**
+	// * @return If the assessment has just one question.
+	// */
+	// public boolean isSingleQuestion() {
+	// return this.getParts().getNumQuestions() == 1;
+	// }
+
+	// /**
+	// * {@inheritDoc}
+	// */
+	// public Boolean getIsValid() {
+	// // must have a title
+	// if (getTitle().length() == 0)
+	// return Boolean.FALSE;
+	//
+	// // dates valid
+	// if (!this.dates.getIsValid())
+	// return Boolean.FALSE;
+	//
+	// // parts valid
+	// if (!this.parts.getIsValid())
+	// return Boolean.FALSE;
+	//
+	// // grading valid
+	// if (!this.grading.getIsValid())
+	// return Boolean.FALSE;
+	//
+	// // points if needed
+	// if (!this.getIsPointsValid())
+	// return Boolean.FALSE;
+	//
+	// // formal course evaluations must have the results email set
+	// if (this.getFormalCourseEval()) {
+	// if (this.getResultsEmail() == null)
+	// return Boolean.FALSE;
+	// }
+	// if (this.getResultsEmail() != null && this.getResultsEmail().length() > 255) {
+	// setResultsEmail(this.getResultsEmail().substring(0, 255));
+	// return Boolean.FALSE;
+	// }
+	// if (this.getResultsEmail() != null && !isEmailValid(this.getResultsEmail()))
+	// return Boolean.FALSE;
+	//
+	// // results email feature needs a due or accept until date
+	// if (this.getResultsEmail() != null && isEmailValid(this.getResultsEmail())) {
+	// if ((this.dates.getDueDate() == null) && (this.dates.getAcceptUntilDate() == null))
+	// return Boolean.FALSE;
+	// }
+	//
+	// // FCE's notify-on-open feature needs an open date
+	// if (this.getFormalCourseEval() && this.notifyEval && this.dates.getOpenDate() == null) {
+	// return Boolean.FALSE;
+	// }
+	//
+	// return Boolean.TRUE;
+	// }
+
+	// /**
+	// * @return The assessment's total points (returns 0 if the assessment doesn't do points).
+	// */
+	// public float getPoints() {
+	// if (!isForPoints()) {
+	// return 0f;
+	// }
+	//
+	// // offline assessments use the assessment points override value
+	// if (this.type == AssessmentType.offline) {
+	// return this.points;
+	// }
+	//
+	// // otherwise we use the parts points
+	// return this.parts.getTotalPoints();
+	// }
+
+	// /**
+	// * {@inheritDoc}
+	// */
+	// public Pool getPool() {
+	// // see if the pool has been deleted - if so we will make a new one
+	// if (this.poolId != null) {
+	// Pool pool = this.poolService.getPool(this.poolId);
+	// if (pool == null) {
+	// this.poolId = null;
+	// }
+	// }
+	//
+	// if (this.poolId == null) {
+	// try {
+	// Pool pool = this.poolService.newPool(this.context);
+	// this.poolId = pool.getId();
+	// if (this.title.length() > 0) {
+	// pool.setTitle(this.title);
+	// }
+	// // Note: if we don't set a >0 length title, the pool will have no changes, remain mint and disappear
+	// else {
+	// pool.setTitle(this.messages.getFormattedMessage("assessment-pool", null));
+	// }
+	// this.poolService.savePool(pool);
+	// this.changed.setChanged();
+	// } catch (AssessmentPermissionException e) {
+	// M_log.warn("getPool: " + e.toString());
+	// }
+	// }
+	//
+	// return this.poolService.getPool(this.poolId);
+	// }
+
+	// /**
+	// * {@inheritDoc}
+	// */
+	// public boolean isEmailValid(String emailAddr) {
+	// Pattern pattern;
+	// Matcher matcher;
+	//
+	// String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+	//
+	// pattern = Pattern.compile(EMAIL_PATTERN);
+	//
+	// if (emailAddr == null || emailAddr.trim().length() == 0)
+	// return false;
+	// if (!emailAddr.contains(",")) {
+	// matcher = pattern.matcher(emailAddr.trim());
+	// return matcher.matches();
+	// } else {
+	// List<String> emailList = Arrays.asList(emailAddr.split(","));
+	// for (String emailStr : emailList) {
+	// matcher = pattern.matcher(emailStr.trim());
+	// if (!matcher.matches())
+	// return false;
+	// }
+	// }
+	// return true;
+	// }
+
+	// /**
+	// * Set the archived flag, and related information.
+	// *
+	// * @param archived
+	// * The archived flag.
+	// */
+	// public void setArchived(boolean archived) {
+	//
+	// this.getStatus().setArchived(archived);
+	//
+	// // if now archived, set the date, and un-publish
+	// if (this.getStatus().isArchived()) {
+	// final Date now = new Date();
+	//
+	// this.getSchedule().setArchived(now);
+	// this.getStatus().setPublished(false);
+	// }
+	//
+	// // else clear the archived date
+	// else {
+	// this.getSchedule().setArchived(null);
+	// }
+	// }
+
+	// TODO: setFormalCourseEval cannot be made to locked assessments
+	// TODO: special permission? assessmentService.allowSetFormalCourseEvaluation(getContext()))
+	// TODO: cannot change tries limit for FCE
+
+	// /**
+	// * {@inheritDoc}
+	// */
+	// public void setHasTimeLimit(Boolean hasTimeLimit) {
+	// if (hasTimeLimit == null)
+	// throw new IllegalArgumentException();
+	//
+	// if ((!hasTimeLimit) && (this.timeLimit != null)) {
+	// this.timeLimit = null;
+	//
+	// this.changed.setChanged();
+	// }
+	// }
+	//
+	// /**
+	// * {@inheritDoc}
+	// */
+	// public void setHasTriesLimit(Boolean hasTriesLimit) {
+	// if (hasTriesLimit == null)
+	// throw new IllegalArgumentException();
+	//
+	// if ((!hasTriesLimit) && (this.tries != null)) {
+	// this.tries = null;
+	//
+	// this.changed.setChanged();
+	//
+	// // this is a change that cannot be made to locked assessments if set to a formal course evaluation
+	// if (this.formalCourseEval)
+	// this.lockedChanged = Boolean.TRUE;
+	// }
+	// }
+
+	// /**
+	// * Set the points, after adjusting the parameter.
+	// *
+	// * @param points
+	// * The points for the assessment, overriding the parts points (only used by offline assessments).
+	// */
+	// public void setPoints(float points) {
+	//
+	// // round away bogus decimals
+	// points = Math.round(points * 100.0f) / 100.0f;
+	//
+	// this.points = points;
+	// }
+
+	// /**
+	// * Set the random access delivery option, enforcing related settings.
+	// *
+	// * @param settings
+	// * The random access setting.
+	// */
+	// // TODO: move to DeliveryOptions
+	// public void setRandomAccess(boolean setting) {
+	//
+	// this.getDeliveryOptions().setRandomAccess(setting);
+	//
+	// // strict order needs by question
+	// if (!this.getDeliveryOptions().isRandomAccess()) {
+	// this.getDeliveryOptions().setQuestionGrouping(DeliveryOptions.QuestionGrouping.question);
+	// }
+	// }
+
+	// TODO: setResultsEmail cannot be made to locked assessments if set to a formal course evaluation
+
+	// /**
+	// * Set the time limit, after adjusting the parameter.
+	// *
+	// * @param limit
+	// * The time limit.
+	// */
+	// // TODO: move to DeliveryOptions
+	// public void setTimeLimit(Long limit) {
+	//
+	// // minimum of one minute
+	// if ((limit != null) && (limit.longValue() < 60000l))
+	// limit = new Long(60000l);
+	//
+	// this.getDeliveryOptions().setTimeLimit(limit);
+	// }
+
+	// /**
+	// * {@inheritDoc}
+	// */
+	// public void setTitle(String title) {
+	// // massage the title
+	// if (title != null) {
+	// title = title.trim();
+	// if (title.length() > 255)
+	// title = title.substring(0, 255);
+	// } else {
+	// title = "";
+	// }
+	//
+	// if (this.title.equals(title))
+	// return;
+	//
+	// this.title = title;
+	//
+	// this.changed.setChanged();
+	// }
+
+	// /**
+	// * {@inheritDoc}
+	// */
+	// public void setTries(Integer count) {
+	// // if < 1, set to 1
+	// if ((count != null) && (count.intValue() < 1)) {
+	// count = Integer.valueOf(1);
+	// }
+	//
+	// if (!Different.different(count, this.tries))
+	// return;
+	//
+	// this.tries = count;
+	//
+	// // this is a change that cannot be made to locked assessments if set to a formal course evaluation
+	// if (this.formalCourseEval)
+	// this.lockedChanged = Boolean.TRUE;
+	//
+	// this.changed.setChanged();
+	// }
+
+	// /**
+	// * {@inheritDoc}
+	// */
+	// public void setType(AssessmentType type) {
+	// if (type == null)
+	// throw new IllegalArgumentException();
+	// if (this.type.equals(type))
+	// return;
+	//
+	// if (this.type == AssessmentType.survey) {
+	// // this is a change that cannot be made to live tests
+	// this.lockedChanged = Boolean.TRUE;
+	// }
+	//
+	// this.type = type;
+	// this.changed.setChanged();
+	//
+	// // Note: for the settings that automatically get set when the type changes, see the AsessmentServiceImpl.java's saveAssessment() method -ggolden
+	// }
+
+	// /**
+	// * Lock the assessment, locking down the dependencies (pools and questions).
+	// */
+	// protected void lock() {
+	// if (this.locked)
+	// return;
+	// initLocked(Boolean.TRUE);
+	//
+	// Map<String, Pool> histories = new HashMap<String, Pool>();
+	// Map<String, Map<String, String>> oldToNews = new HashMap<String, Map<String, String>>();
+	//
+	// // make a history copy of all used pools and questions
+	// // switch over the parts
+	// // make sure questions from the same pool end up in the same pool
+	//
+	// for (Part part : this.parts.parts) {
+	// ((Part) part).changed = true;
+	//
+	// for (PartDetail detail : part.getDetails()) {
+	// if (detail instanceof PoolDraw) {
+	// PoolDraw draw = (PoolDraw) detail;
+	//
+	// // if we have not yet made a history for this pool, do so
+	// Pool history = histories.get(draw.getPoolId());
+	// if (history == null) {
+	// Map<String, String> oldToNew = new HashMap<String, String>();
+	// history = this.poolService.makePoolHistory(draw.getPool(), oldToNew);
+	// histories.put(draw.getPoolId(), history);
+	// oldToNews.put(draw.getPoolId(), oldToNew);
+	// }
+	// draw.setPool(history);
+	// } else if (detail instanceof QuestionPick) {
+	// QuestionPick pick = (QuestionPick) detail;
+	//
+	// Question q = this.questionService.getQuestion(pick.getQuestionId());
+	// if (q != null) {
+	// // make sure we have this question's complete pool
+	// Pool history = histories.get(q.getPool().getId());
+	// if (history == null) {
+	// Map<String, String> oldToNew = new HashMap<String, String>();
+	// history = this.poolService.makePoolHistory(q.getPool(), oldToNew);
+	// histories.put(q.getPool().getId(), history);
+	// oldToNews.put(q.getPool().getId(), oldToNew);
+	// }
+	//
+	// // get the mapping for this pool
+	// Map<String, String> oldToNew = oldToNews.get(q.getPool().getId());
+	// String historicalQid = oldToNew.get(q.getId());
+	// if (historicalQid != null) {
+	// pick.setQuestionId(historicalQid);
+	// }
+	// }
+	// }
+	// }
+	// }
+	// }
 
 	/**
 	 * Set as a copy of another.
 	 * 
 	 * @param other
 	 *            The other to copy.
+	 * @return this (for chaining).
 	 */
-	protected void set(Assessment other) {
-		this.archived = other.archived;
-		this.archivedWas = other.archivedWas;
-		this.assessmentService = other.assessmentService;
-		this.changed = new Changeable(other.changed);
-		this.context = other.context;
-		this.createdBy = new Attribution((Attribution) other.createdBy, this.changed);
-		this.dates = new AssessmentDates(this, (AssessmentDates) other.dates, this.changed);
-		this.evaluationSent = other.evaluationSent;
-		this.formalCourseEval = other.formalCourseEval;
-		this.frozen = other.frozen;
-		this.grading = new AssessmentGrading((AssessmentGrading) other.grading, this.changed);
-		this.honorPledge = other.honorPledge;
-		this.id = other.id;
-		this.lockedChanged = other.lockedChanged;
-		this.messages = other.messages;
-		this.live = other.live;
-		this.locked = other.locked;
-		this.mint = other.mint;
-		this.modifiedBy = new Attribution((Attribution) other.modifiedBy, this.changed);
-		this.needsPoints = other.needsPoints;
-		this.notifyEval = other.notifyEval;
-		this.parts = new AssessmentParts(this, (AssessmentParts) other.parts, this.changed);
-		this.password = new AssessmentPassword((AssessmentPassword) other.password, this.changed);
-		this.poolId = other.poolId;
-		this.poolService = other.poolService;
-		this.presentation = new Presentation((Presentation) other.presentation, this.changed);
-		this.published = other.published;
-		this.publishedWas = other.publishedWas;
-		this.questionGrouping = other.questionGrouping;
-		this.questionService = other.questionService;
-		this.needsRescore = other.needsRescore;
-		this.randomAccess = other.randomAccess;
-		this.shuffleChoicesOverride = other.shuffleChoicesOverride;
-		this.resultsEmail = other.resultsEmail;
-		this.resultsSent = other.resultsSent;
-		this.review = new AssessmentReview(this, (AssessmentReview) other.review, this.changed);
-		this.showHints = other.showHints;
-		this.showModelAnswer = other.showModelAnswer;
-		this.submissionContext = other.submissionContext;
-		this.submissionService = other.submissionService;
-		this.submitPresentation = new Presentation((Presentation) other.submitPresentation, this.changed);
-		this.securityService = other.securityService;
-		this.specialAccess = new AssessmentSpecialAccess(this, (AssessmentSpecialAccess) other.specialAccess, this.changed);
-		this.timeLimit = other.timeLimit;
+	public Assessment set(Assessment other) {
+		this.certificateOptions = new CertificateOptions().set(other.getCertificateOptions());
+		this.context = other.getContext();
+		this.createdBy = new Attribution().set(other.getCreatedBy());
+		this.deliveryOptions = new DeliveryOptions().set(other.getDeliveryOptions());
+		this.gradingOptions = new GradingOptions().set(other.getGradingOptions());
+		this.id = other.getId();
+		this.modifiedBy = new Attribution().set(other.getModifiedBy());
+		this.notificationOptions = new NotificationOptions().set(other.getNotificationOptions());
+		this.parts = new Parts().set(other.getParts());
+		this.pointsOptions = new PointsOptions().set(other.getPointsOptions());
+		this.poolId = other.getPoolId();
+		this.presentation = new Presentation().set(other.getPresentation());
+		this.reviewOptions = new ReviewOptions().set(other.getReviewOptions());
+		this.schedule = new Schedule().set(other.getSchedule());
+		this.specialAccess = new SpecialAccess().set(other.getSpecialAccess());
+		this.status = new AssessmentStatus().set(other.getStatus());
 		this.title = other.title;
-		this.titleWas = other.titleWas;
-		this.tries = other.tries;
 		this.type = other.type;
-		this.typeWas = other.typeWas;
-		this.userDirectoryService = other.userDirectoryService;
-		this.minScoreSet = other.minScoreSet;
-		this.minScore = other.minScore;
-		this.points = other.points;
-		this.pointsWas = other.pointsWas;
-	}
 
+		return this;
+	}
 }

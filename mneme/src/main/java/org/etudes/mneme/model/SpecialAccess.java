@@ -30,14 +30,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * AssessmentSpecialAccess holds details of special access for select users to an assessment.
+ * SpecialAccess holds details of special access for select users to an assessment.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AssessmentSpecialAccess {
+public class SpecialAccess {
 	/** The special access definitions. */
-	protected List<AssessmentAccess> specialAccess = new ArrayList<AssessmentAccess>();
+	protected List<Overrides> specialAccess = new ArrayList<Overrides>();
 
 	// TODO: addAccess cannot be made to locked assessments if set to a formal course evaluation
 
@@ -46,8 +46,8 @@ public class AssessmentSpecialAccess {
 	 * 
 	 * @return The new special access.
 	 */
-	public AssessmentAccess addAccess() {
-		AssessmentAccess rv = new AssessmentAccess();
+	public Overrides addAccess() {
+		Overrides rv = new Overrides();
 		this.specialAccess.add(rv);
 
 		return rv;
@@ -62,9 +62,9 @@ public class AssessmentSpecialAccess {
 	 *            The user id to look for.
 	 * @return The special access for this userId, perhaps new.
 	 */
-	public AssessmentAccess assureUserAccess(String userId) {
+	public Overrides assureUserAccess(String userId) {
 		// find an access completely for this user
-		Optional<AssessmentAccess> accessForUser = this.specialAccess.stream() //
+		Optional<Overrides> accessForUser = this.specialAccess.stream() //
 				.filter(a -> ((a.getUserIds().size() == 1) && a.getUserIds().get(0).equals(userId))) //
 				.findFirst();
 		if (accessForUser.isPresent()) {
@@ -75,13 +75,13 @@ public class AssessmentSpecialAccess {
 		List<String> userIds = new ArrayList<String>(1);
 		userIds.add(userId);
 
-		AssessmentAccess access = null;
+		Overrides access = null;
 
 		// see if there's one that pertains to this user, although it is not only for this user - add a copy if so
-		Optional<AssessmentAccess> userAccess = getUserAccess(userId);
+		Optional<Overrides> userAccess = getUserAccess(userId);
 		if (userAccess.isPresent()) {
 			// make a copy
-			AssessmentAccess newAccess = new AssessmentAccess();
+			Overrides newAccess = new Overrides();
 			newAccess.set(userAccess.get());
 			newAccess.setId(null);
 
@@ -165,16 +165,16 @@ public class AssessmentSpecialAccess {
 	 *            The special access id.
 	 * @return the special access in this set with this id, if defined.
 	 */
-	public Optional<AssessmentAccess> getAccess(String id) {
-		Optional<AssessmentAccess> rv = this.specialAccess.stream().filter(a -> a.getId().equals(id)).findFirst();
+	public Optional<Overrides> getAccess(String id) {
+		Optional<Overrides> rv = this.specialAccess.stream().filter(a -> a.getId().equals(id)).findFirst();
 		return rv;
 	}
 
 	/**
 	 * @return The special access defined for the assessment, sorted by user sort display.
 	 */
-	public List<AssessmentAccess> getOrderedAccess() {
-		List<AssessmentAccess> rv = new ArrayList<AssessmentAccess>(this.specialAccess);
+	public List<Overrides> getOrderedAccess() {
+		List<Overrides> rv = new ArrayList<Overrides>(this.specialAccess);
 
 		// TODO: come back to this
 		// // sort
@@ -221,8 +221,8 @@ public class AssessmentSpecialAccess {
 	 *            The user id.
 	 * @return the special access for this user, if defined.
 	 */
-	public Optional<AssessmentAccess> getUserAccess(String userId) {
-		Optional<AssessmentAccess> rv = this.specialAccess.stream().filter(a -> a.isForUser(userId)).findFirst();
+	public Optional<Overrides> getUserAccess(String userId) {
+		Optional<Overrides> rv = this.specialAccess.stream().filter(a -> a.isForUser(userId)).findFirst();
 		return rv;
 	}
 
@@ -238,8 +238,8 @@ public class AssessmentSpecialAccess {
 	 *            The assessment's dates.
 	 * @return validity.
 	 */
-	public boolean isValid(AssessmentDates base) {
-		for (AssessmentAccess access : this.specialAccess) {
+	public boolean isValid(Schedule base) {
+		for (Overrides access : this.specialAccess) {
 			if (access.isEmpty())
 				continue;
 			if (!access.isValid(base))
@@ -257,7 +257,7 @@ public class AssessmentSpecialAccess {
 	 * @param access
 	 *            the access to remove.
 	 */
-	public void removeAccess(AssessmentAccess remove) {
+	public void removeAccess(Overrides remove) {
 		this.specialAccess.remove(remove);
 	}
 
@@ -267,10 +267,10 @@ public class AssessmentSpecialAccess {
 	 * @param target
 	 *            The access to keep.
 	 */
-	protected void assureSingleAccessForUser(AssessmentAccess target) {
-		List<AssessmentAccess> toRemove = new ArrayList<AssessmentAccess>();
+	protected void assureSingleAccessForUser(Overrides target) {
+		List<Overrides> toRemove = new ArrayList<Overrides>();
 
-		for (AssessmentAccess access : this.specialAccess) {
+		for (Overrides access : this.specialAccess) {
 			// skip the target
 			if (access.equals(target))
 				continue;
@@ -292,7 +292,7 @@ public class AssessmentSpecialAccess {
 		}
 
 		// remove those we cleared out all users from
-		for (AssessmentAccess access : toRemove) {
+		for (Overrides access : toRemove) {
 			removeAccess(access);
 		}
 	}
@@ -310,10 +310,10 @@ public class AssessmentSpecialAccess {
 	 * @param base
 	 *            The assessment dates.
 	 */
-	protected void consolidate(AssessmentDates base) {
+	protected void consolidate(Schedule base) {
 		// if any stored definitions override nothing, or have no users, remove them
-		for (Iterator<AssessmentAccess> i = this.specialAccess.iterator(); i.hasNext();) {
-			AssessmentAccess access = i.next();
+		for (Iterator<Overrides> i = this.specialAccess.iterator(); i.hasNext();) {
+			Overrides access = i.next();
 			if (access.getId() == null)
 				continue;
 
@@ -347,13 +347,16 @@ public class AssessmentSpecialAccess {
 	 * 
 	 * @param other
 	 *            The other to copy.
+	 * @return this (for chaining).
 	 */
-	protected void set(Assessment assessment, AssessmentSpecialAccess other) {
+	public SpecialAccess set(SpecialAccess other) {
 		this.specialAccess.clear();
-		for (AssessmentAccess access : other.specialAccess) {
-			AssessmentAccess copy = new AssessmentAccess();
+		for (Overrides access : other.specialAccess) {
+			Overrides copy = new Overrides();
 			copy.set(access);
 			this.specialAccess.add(copy);
 		}
+
+		return this;
 	}
 }
