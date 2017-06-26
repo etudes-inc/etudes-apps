@@ -20,8 +20,6 @@ package org.etudes.mneme.model;
 
 import java.util.Date;
 
-import org.etudes.mneme.api.MnemeService;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -173,7 +171,7 @@ public class Schedule {
 		// TODO:
 
 		Date now = new Date();
-		long grace = withGrace ? MnemeService.GRACE : 0l;
+		long grace = withGrace ? GRACE : 0l;
 
 		// if we have an open date and we are not there yet
 		if ((getOpen() != null) && (now.before(getOpen())))
