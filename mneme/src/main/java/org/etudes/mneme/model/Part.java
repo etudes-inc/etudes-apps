@@ -225,7 +225,7 @@ public class Part {
 			if (detail instanceof PoolDraw) {
 				PoolDraw draw = (PoolDraw) detail;
 
-				if (draw.getPoolId().equals(pool.getId())) {
+				if (draw.getPoolId() == pool.getId()) {
 					if (draw.getNumQuestions() == numQuestions) {
 						// no change, we are done
 						return draw;
@@ -240,7 +240,7 @@ public class Part {
 		}
 
 		// add this to the details
-		PoolDraw rv = new PoolDraw(numQuestions, null, pool.getId());
+		PoolDraw rv = new PoolDraw(numQuestions, 0l, pool.getId());
 		getDetails().add(rv);
 
 		return rv;
@@ -259,7 +259,7 @@ public class Part {
 			if (detail instanceof QuestionPick) {
 				QuestionPick pick = (QuestionPick) detail;
 
-				if (pick.getQuestionId().equals(question.getId())) {
+				if (pick.getQuestionId() == question.getId()) {
 					// no change, we are done
 					return pick;
 				}
@@ -267,7 +267,7 @@ public class Part {
 		}
 
 		// add this to the details
-		QuestionPick rv = new QuestionPick(null, question.getId(), null);
+		QuestionPick rv = new QuestionPick(0l, question.getId(), null);
 		getDetails().add(rv);
 
 		return rv;
@@ -661,7 +661,7 @@ public class Part {
 			if (detail instanceof PoolDraw) {
 				PoolDraw draw = (PoolDraw) detail;
 
-				if (draw.getPoolId().equals(pool.getId())) {
+				if (draw.getPoolId() == pool.getId()) {
 					i.remove();
 					// this.deletedDetails.add(detail);
 				}
@@ -682,7 +682,7 @@ public class Part {
 			if (detail instanceof QuestionPick) {
 				QuestionPick pick = (QuestionPick) detail;
 
-				if (pick.getQuestionId().equals(question.getId())) {
+				if (pick.getQuestionId() == question.getId()) {
 					i.remove();
 					// this.deletedDetails.add(detail);
 				}
@@ -719,8 +719,8 @@ public class Part {
 			} else if (detail instanceof PoolDraw) {
 				PoolDraw draw = (PoolDraw) detail;
 
-				List<String> draws = draw.getAllQuestionIds();
-				for (String id : draws) {
+				List<Long> draws = draw.getAllQuestionIds();
+				for (Long id : draws) {
 					QuestionPick pick = new QuestionPick(id, id, draw);
 					rv.add(pick);
 				}
@@ -747,8 +747,8 @@ public class Part {
 			if (detail instanceof PoolDraw) {
 				PoolDraw draw = (PoolDraw) detail;
 
-				List<String> draws = draw.drawQuestionIds(shuffler);
-				for (String id : draws) {
+				List<Long> draws = draw.drawQuestionIds(shuffler);
+				for (Long id : draws) {
 					QuestionPick pick = new QuestionPick(id, id, draw);
 					rv.add(pick);
 				}

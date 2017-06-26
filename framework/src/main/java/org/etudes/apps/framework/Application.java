@@ -33,6 +33,8 @@ import org.etudes.apps.user.data.UserData;
 import org.etudes.apps.user.impl.UserDataJDBIImpl;
 import org.etudes.apps.user.impl.UserServiceImpl;
 import org.etudes.mneme.AssessmentService;
+import org.etudes.mneme.data.AssessmentData;
+import org.etudes.mneme.impl.AssessmentDataJDBIImpl;
 import org.etudes.mneme.impl.AssessmentServiceImpl;
 import org.etudes.mneme.wapi.MnemeAPI;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -132,7 +134,7 @@ public class Application extends io.dropwizard.Application<Configuration> {
 				// make our services available for injection - as singletons
 
 				// assessment
-				// bind(AuthenticationDataJDBIImpl.class).to(AuthenticationData.class).in(Singleton.class);
+				bind(AssessmentDataJDBIImpl.class).to(AssessmentData.class).in(Singleton.class);
 				bind(AssessmentServiceImpl.class).to(AssessmentService.class).in(Singleton.class);
 
 				// authentication

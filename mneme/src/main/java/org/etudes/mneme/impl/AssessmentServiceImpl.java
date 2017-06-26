@@ -21,10 +21,12 @@ package org.etudes.mneme.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
 import org.etudes.mneme.AssessmentService;
+import org.etudes.mneme.data.AssessmentData;
 import org.etudes.mneme.model.Assessment;
 import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
@@ -34,12 +36,36 @@ import org.slf4j.LoggerFactory;
 public class AssessmentServiceImpl implements AssessmentService {
 	final static private Logger logger = LoggerFactory.getLogger(AssessmentServiceImpl.class);
 
+	final protected AssessmentData data;
+
 	/**
 	 * Create the assessment service
 	 */
 	@Inject
-	public AssessmentServiceImpl() {
+	public AssessmentServiceImpl(AssessmentData data) {
+		this.data = data;
 		logger.info("AuthenticationService");
+	}
+
+	@Override
+	public Optional<Assessment> createAssessment(long subscriptionId, String context, long userId, Assessment asmt) {
+
+		final Date now = new Date();
+
+		asmt.setSubscription(subscriptionId);
+		asmt.setContext(context);
+		asmt.getCreated().setDate(now);
+		asmt.getCreated().setUserId(userId);
+		asmt.getModified().setDate(now);
+		asmt.getModified().setUserId(userId);
+
+		// clean up values
+		clean(asmt);
+
+		// create
+		Optional<Assessment> rv = data.create(asmt);
+
+		return rv;
 	}
 
 	@Override
@@ -49,7 +75,7 @@ public class AssessmentServiceImpl implements AssessmentService {
 		List<Assessment> rv = new ArrayList<>();
 
 		Assessment a = new Assessment();
-		a.setId("a1");
+		a.setId(1l);
 		a.getSchedule().setOpen(new Date());
 		a.getSchedule().setDue(new Date());
 		a.getSchedule().setUntil(new Date());
@@ -59,7 +85,7 @@ public class AssessmentServiceImpl implements AssessmentService {
 		rv.add(a);
 
 		a = new Assessment();
-		a.setId("a2");
+		a.setId(2l);
 		a.getSchedule().setOpen(new Date());
 		a.getSchedule().setDue(new Date());
 		a.getSchedule().setUntil(new Date());
@@ -69,7 +95,7 @@ public class AssessmentServiceImpl implements AssessmentService {
 		rv.add(a);
 
 		a = new Assessment();
-		a.setId("a3");
+		a.setId(3l);
 		a.getSchedule().setOpen(new Date());
 		a.getSchedule().setDue(new Date());
 		a.getSchedule().setUntil(new Date());
@@ -79,5 +105,26 @@ public class AssessmentServiceImpl implements AssessmentService {
 		rv.add(a);
 
 		return rv;
+	}
+
+	/**
+	 * Enforce any rules about values by forcing the values.
+	 * 
+	 * @param asmt
+	 *            The assessment to clean
+	 */
+	protected void clean(Assessment asmt) {
+
+		// title: must be 0 .. 255 characters if defined
+		if (asmt.getTitle() != null) {
+			String title = asmt.getTitle();
+			title = title.trim();
+			if (title.length() > 255) {
+				title = title.substring(0, 255);
+			}
+			asmt.setTitle(title);
+		}
+
+		// TODO:
 	}
 }

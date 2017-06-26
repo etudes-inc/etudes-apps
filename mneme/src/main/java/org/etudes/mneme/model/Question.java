@@ -31,6 +31,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Question {
 
-	/** The question id. */
-	protected String id;
+	/** The question id. 0 indicates not yet set. */
+	protected long id = 0l;
 }

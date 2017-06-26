@@ -38,10 +38,10 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class QuestionPick extends PartDetail {
 	/** The original question id. */
-	protected String origQuestionId = null;
+	protected long origQuestionId = 0l;
 
 	/** The actual question id. */
-	protected String questionId = null;
+	protected long questionId = 0l;
 
 	/** A related detail. */
 	protected transient PartDetail relatedDetail = null;
@@ -109,19 +109,19 @@ public class QuestionPick extends PartDetail {
 	 * 
 	 * @return the original question id.
 	 */
-	public String getOrigQuestionId() {
+	public long getOrigQuestionId() {
 		return this.origQuestionId;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public String getPoolId() {
+	public long getPoolId() {
 		// TODO:
 		// Question q = this.questionService.getQuestion(this.questionId);
 		// if (q == null) return null;
 		// return q.getPool().getId();
-		return null;
+		return 0l;
 	}
 
 	/**
@@ -193,7 +193,7 @@ public class QuestionPick extends PartDetail {
 	 * {@inheritDoc}
 	 */
 	public boolean isUsingSameQuestion(QuestionPick other) {
-		return this.questionId.equals(other.questionId);
+		return this.questionId == other.questionId;
 	}
 
 	/**
@@ -251,7 +251,7 @@ public class QuestionPick extends PartDetail {
 		this.questionId = question.getId();
 
 		// set the original only once
-		if (this.origQuestionId == null) {
+		if (this.origQuestionId == 0l) {
 			this.origQuestionId = question.getId();
 		}
 	}

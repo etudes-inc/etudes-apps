@@ -38,7 +38,7 @@ public class Attribution {
 	protected Date date = null;
 
 	/** The user id. */
-	protected String userId = null;
+	protected long userId = 0l;
 
 	/**
 	 * Set as a copy of another.

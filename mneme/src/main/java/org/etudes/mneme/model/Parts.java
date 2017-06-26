@@ -108,7 +108,7 @@ public class Parts {
 	 * 
 	 * @return The List of draws.
 	 */
-	public List<PoolDraw> getDraws(/*final PoolService.FindPoolsSort sort*/) {
+	public List<PoolDraw> getDraws(/* final PoolService.FindPoolsSort sort */) {
 		List<PoolDraw> rv = new ArrayList<PoolDraw>();
 		for (PartDetail detail : getDetails()) {
 			if (detail instanceof PoolDraw) {
@@ -182,7 +182,7 @@ public class Parts {
 	 *            The search criteria.
 	 * @return A list of draws for each pool.
 	 */
-	public List<PoolDraw> getDrawsForPools(String context, /*PoolService.FindPoolsSort sort, */ String search) {
+	public List<PoolDraw> getDrawsForPools(String context, /* PoolService.FindPoolsSort sort, */ String search) {
 		// TODO:
 		return new ArrayList<>();
 		// // get all the pools we need
@@ -298,7 +298,7 @@ public class Parts {
 		}
 
 		// we must only draw from a pool once across all draw parts
-		List<String> poolIds = new ArrayList<String>();
+		List<Long> poolIds = new ArrayList<>();
 		for (Part part : this.parts) {
 			for (PartDetail detail : part.getDetails()) {
 				if (detail instanceof PoolDraw) {
@@ -314,7 +314,7 @@ public class Parts {
 		}
 
 		// we must pick a question only once each across all manual parts
-		List<String> questionIds = new ArrayList<String>();
+		List<Long> questionIds = new ArrayList<>();
 		for (Part part : this.parts) {
 			for (PartDetail detail : part.getDetails()) {
 				if (detail instanceof QuestionPick) {
@@ -504,12 +504,12 @@ public class Parts {
 	 * @return The virtual PoolDraw for this pool.
 	 */
 	public PoolDraw getVirtualDraw(Pool pool) {
-		PoolDraw rv = new PoolDraw(0, null, pool.getId());
+		PoolDraw rv = new PoolDraw(0, 0l, pool.getId());
 		for (PartDetail detail : getDetails()) {
 			if (detail instanceof PoolDraw) {
 				PoolDraw myDraw = (PoolDraw) detail;
 
-				if (myDraw.getPoolId().equals(pool.getId())) {
+				if (myDraw.getPoolId() == pool.getId()) {
 					rv.setNumQuestions(myDraw.getNumQuestions());
 				}
 			}

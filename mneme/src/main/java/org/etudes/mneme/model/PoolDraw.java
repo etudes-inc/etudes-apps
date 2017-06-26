@@ -43,10 +43,10 @@ public class PoolDraw extends PartDetail {
 	protected int numQuestions = 0;
 
 	/** The original pool id. */
-	protected String origPoolId = null;
+	protected long origPoolId = 0l;
 
 	/** The actual pool id. */
-	protected String poolId = null;
+	protected long poolId = 0l;
 
 	/**
 	 * Draw questions based on this random seed.
@@ -55,7 +55,7 @@ public class PoolDraw extends PartDetail {
 	 *            The shuffler.
 	 * @return A List of question ids drawn from the pool.
 	 */
-	public List<String> drawQuestionIds(Shuffler shuffler) {
+	public List<Long> drawQuestionIds(Shuffler shuffler) {
 		// TODO:
 		// Pool pool = getPool();
 		// if (pool == null)
@@ -97,7 +97,7 @@ public class PoolDraw extends PartDetail {
 	 * 
 	 * @return A List of question ids from the pool.
 	 */
-	public List<String> getAllQuestionIds() {
+	public List<Long> getAllQuestionIds() {
 		// TODO:
 		// Pool pool = getPool();
 		// if (pool == null)
@@ -286,7 +286,7 @@ public class PoolDraw extends PartDetail {
 	 * @return if this draws from the same pool as the other.
 	 */
 	public boolean isSamePool(PoolDraw other) {
-		return this.poolId.equals(other.poolId);
+		return this.poolId == other.poolId;
 	}
 
 	/**
@@ -301,8 +301,6 @@ public class PoolDraw extends PartDetail {
 	 */
 	public boolean isValid() {
 		// we need a valid pool and a positive count that is within the pool's question limit
-		if (this.poolId == null)
-			return false;
 		if (this.numQuestions <= 0)
 			return false;
 
@@ -361,7 +359,7 @@ public class PoolDraw extends PartDetail {
 		this.poolId = pool.getId();
 
 		// set the original only once
-		if (this.origPoolId == null) {
+		if (this.origPoolId == 0l) {
 			this.origPoolId = pool.getId();
 		}
 	}

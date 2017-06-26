@@ -36,12 +36,31 @@ public class Assessment {
 	 * Type enumerates the different assessment types.
 	 */
 	public enum Type {
-		assignment(1), offline(3), survey(2), test(0);
+		assignment("A", 1), offline("O", 3), survey("S", 2), test("T", 0);
 
+		public static Type fromCode(String code) {
+			for (Type t : Type.values()) {
+				if (t.code.equalsIgnoreCase(code)) {
+					return t;
+				}
+			}
+
+			return test;
+		}
+
+		/** Defines the codes to use to reconstruct the types (for example, from a db). */
+		private final String code;
+
+		/** Defines the sort order. */
 		private final int sortOrder;
 
-		private Type(int sortOrder) {
-			this.sortOrder = Integer.valueOf(sortOrder);
+		private Type(String code, int sortOrder) {
+			this.code = code;
+			this.sortOrder = sortOrder;
+		}
+
+		public String getCode() {
+			return code;
 		}
 
 		public Integer getSortValue() {
@@ -56,19 +75,19 @@ public class Assessment {
 	protected String context = "";
 
 	/** Who and when created. */
-	protected Attribution createdBy = null;
+	protected Attribution created = new Attribution();
 
 	/** Options related to delivery. */
 	protected DeliveryOptions deliveryOptions = new DeliveryOptions();
 
 	/** Options related to grading. */
-	protected GradingOptions gradingOptions = null;
+	protected GradingOptions gradingOptions = new GradingOptions();
 
-	/** Internal ID. */
-	protected String id = null;
+	/** Internal ID. 0 indicates not yet set. */
+	protected long id = 0l;
 
 	/** Last changed by and when. */
-	protected Attribution modifiedBy = null;
+	protected Attribution modified = new Attribution();
 
 	/** Options related to notifications at assessment close. */
 	protected NotificationOptions notificationOptions = new NotificationOptions();
@@ -96,6 +115,9 @@ public class Assessment {
 
 	/** Details about the assessment status that change over time. */
 	protected AssessmentStatus status = new AssessmentStatus();
+
+	/** Subscription ID. 0 indicates not yet set. */
+	protected long subscription = 0l;
 
 	/** Some ??? other ??? presentation ??? */
 	// protected Presentation submitPresentation = null;
@@ -653,11 +675,11 @@ public class Assessment {
 	public Assessment set(Assessment other) {
 		this.certificateOptions = new CertificateOptions().set(other.getCertificateOptions());
 		this.context = other.getContext();
-		this.createdBy = new Attribution().set(other.getCreatedBy());
+		this.created = new Attribution().set(other.getCreated());
 		this.deliveryOptions = new DeliveryOptions().set(other.getDeliveryOptions());
 		this.gradingOptions = new GradingOptions().set(other.getGradingOptions());
 		this.id = other.getId();
-		this.modifiedBy = new Attribution().set(other.getModifiedBy());
+		this.modified = new Attribution().set(other.getModified());
 		this.notificationOptions = new NotificationOptions().set(other.getNotificationOptions());
 		this.parts = new Parts().set(other.getParts());
 		this.pointsOptions = new PointsOptions().set(other.getPointsOptions());

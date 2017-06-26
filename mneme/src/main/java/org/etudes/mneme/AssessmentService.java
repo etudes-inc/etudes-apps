@@ -19,6 +19,7 @@
 package org.etudes.mneme;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.etudes.mneme.model.Assessment;
 import org.jvnet.hk2.annotations.Contract;
@@ -32,6 +33,21 @@ public interface AssessmentService {
 	enum Sort {
 		cdate_a, cdate_d, ddate_a, ddate_d, odate_a, odate_d, published_a, published_d, title_a, title_d, type_a, type_d
 	}
+
+	/**
+	 * Create an assessment
+	 * 
+	 * @param subscriptionId
+	 *            The subscription to own the assessment.
+	 * @param context
+	 *            The context to associate with the assessment.
+	 * @param userId
+	 *            The creator of the assessment.
+	 * @param asmt
+	 *            The assessment to create (minus id).
+	 * @return The created assessment, or not if the create failed.
+	 */
+	Optional<Assessment> createAssessment(long subscriptionId, String context, long userId, Assessment asmt);
 
 	/**
 	 * @param context
