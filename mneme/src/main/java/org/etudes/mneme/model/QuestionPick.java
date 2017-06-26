@@ -20,7 +20,7 @@ package org.etudes.mneme.model;
 
 import java.util.Map;
 
-import org.etudes.mneme.api.Question;
+//import org.etudes.mneme.api.Question;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

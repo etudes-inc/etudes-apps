@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.etudes.mneme.api.Ordering;
+import org.etudes.mneme.Ordering;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

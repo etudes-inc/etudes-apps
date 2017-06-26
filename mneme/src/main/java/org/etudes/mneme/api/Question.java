@@ -21,6 +21,7 @@
 
 package org.etudes.mneme.api;
 
+import org.etudes.mneme.Ordering;
 import org.etudes.mneme.model.Reference;
 
 /**

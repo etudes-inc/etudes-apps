@@ -23,10 +23,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.etudes.mneme.api.Pool;
-import org.etudes.mneme.api.PoolService;
-import org.etudes.mneme.api.Question;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -112,7 +108,7 @@ public class Parts {
 	 * 
 	 * @return The List of draws.
 	 */
-	public List<PoolDraw> getDraws(final PoolService.FindPoolsSort sort) {
+	public List<PoolDraw> getDraws(/*final PoolService.FindPoolsSort sort*/) {
 		List<PoolDraw> rv = new ArrayList<PoolDraw>();
 		for (PartDetail detail : getDetails()) {
 			if (detail instanceof PoolDraw) {
@@ -186,7 +182,7 @@ public class Parts {
 	 *            The search criteria.
 	 * @return A list of draws for each pool.
 	 */
-	public List<PoolDraw> getDrawsForPools(String context, PoolService.FindPoolsSort sort, String search) {
+	public List<PoolDraw> getDrawsForPools(String context, /*PoolService.FindPoolsSort sort, */ String search) {
 		// TODO:
 		return new ArrayList<>();
 		// // get all the pools we need

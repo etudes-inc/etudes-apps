@@ -35,6 +35,10 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class Schedule {
+
+	/** The number of ms we allow answers and completions of submissions after hard deadlines. */
+	static final long GRACE = 2 * 60 * 1000;
+
 	/** The date the assessment was archived. */
 	protected Date archived = null;
 

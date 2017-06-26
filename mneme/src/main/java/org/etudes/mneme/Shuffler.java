@@ -19,7 +19,7 @@
  *
  **********************************************************************************/
 
-package org.etudes.mneme.api;
+package org.etudes.mneme;
 
 import java.util.List;
 

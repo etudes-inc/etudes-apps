@@ -24,10 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-import org.etudes.mneme.api.Ordering;
-import org.etudes.mneme.api.Pool;
-import org.etudes.mneme.api.Question;
-import org.etudes.mneme.api.Shuffler;
+import org.etudes.mneme.Ordering;
+import org.etudes.mneme.Shuffler;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

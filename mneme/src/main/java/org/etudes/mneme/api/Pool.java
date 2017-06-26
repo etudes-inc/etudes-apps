@@ -23,6 +23,8 @@ package org.etudes.mneme.api;
 
 import java.util.List;
 
+import org.etudes.mneme.Shuffler;
+
 /**
  * Pool defines the question pools.
  */
