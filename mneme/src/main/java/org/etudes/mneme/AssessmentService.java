@@ -68,4 +68,17 @@ public interface AssessmentService {
 	 * @return All the assessments for the context, sorted. Does not include archived assessments. Unpublished & invalid are optionally included.
 	 */
 	List<Assessment> getContextAssessments(long subscriptionId, String context, Sort sort, Boolean publishedOnly);
+
+	/**
+	 * Save the changes to this assessment.
+	 * 
+	 * @param userId
+	 *            The user making the changes.
+	 * @param current
+	 *            The current value of the assessment.
+	 * @param updated
+	 *            The updated value of the assessment.
+	 * @return The updated assessment, or not if the save fails.
+	 */
+	Optional<Assessment> saveAssessment(long userId, Assessment current, Assessment updated);
 }

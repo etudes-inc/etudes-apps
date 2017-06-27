@@ -69,49 +69,54 @@ public class Assessment {
 	}
 
 	/** Options related to issuing certificates. */
-	protected CertificateOptions certificateOptions = new CertificateOptions();
+	// protected CertificateOptions certificateOptions = new CertificateOptions();
 
 	/** The assessment context - where it belongs in the LMS. */
-	protected String context = "";
+	protected String context = null;
 
 	/** Who and when created. */
+//	@JsonProperty(access = Access.READ_ONLY)
+//	@JsonIgnore
 	protected Attribution created = new Attribution();
 
 	/** Options related to delivery. */
-	protected DeliveryOptions deliveryOptions = new DeliveryOptions();
+	// protected DeliveryOptions deliveryOptions = new DeliveryOptions();
 
 	/** Options related to grading. */
-	protected GradingOptions gradingOptions = new GradingOptions();
+	// protected GradingOptions gradingOptions = new GradingOptions();
 
 	/** Internal ID. 0 indicates not yet set. */
+	// @JsonProperty(access = Access.READ_ONLY)
 	protected long id = 0l;
 
 	/** Last changed by and when. */
+//	@JsonProperty(access = Access.READ_ONLY)
+//	@JsonIgnore
 	protected Attribution modified = new Attribution();
 
 	/** Options related to notifications at assessment close. */
-	protected NotificationOptions notificationOptions = new NotificationOptions();
+	// protected NotificationOptions notificationOptions = new NotificationOptions();
 
 	/** The assessment parts. */
-	protected Parts parts = new Parts();
+	// protected Parts parts = new Parts();
 
 	/** Options related to assessment level points. */
-	protected PointsOptions pointsOptions = new PointsOptions();
+	// protected PointsOptions pointsOptions = new PointsOptions();
 
 	/** The auto-pool for this assessment. */
-	protected String poolId = null;
+	// protected String poolId = null;
 
 	/** The presentation for the assessment. */
-	protected Presentation presentation = new Presentation();
+	// protected Presentation presentation = new Presentation();
 
 	/** Assessment review options. */
-	protected ReviewOptions reviewOptions = new ReviewOptions();
+	// protected ReviewOptions reviewOptions = new ReviewOptions();
 
 	/** The schedule. */
 	protected Schedule schedule = new Schedule();
 
 	/** Special access to the assessment. */
-	protected SpecialAccess specialAccess = new SpecialAccess();
+	// protected SpecialAccess specialAccess = new SpecialAccess();
 
 	/** Details about the assessment status that change over time. */
 	protected AssessmentStatus status = new AssessmentStatus();
@@ -665,33 +670,33 @@ public class Assessment {
 	// }
 	// }
 
-	/**
-	 * Set as a copy of another.
-	 * 
-	 * @param other
-	 *            The other to copy.
-	 * @return this (for chaining).
-	 */
-	public Assessment set(Assessment other) {
-		this.certificateOptions = new CertificateOptions().set(other.getCertificateOptions());
-		this.context = other.getContext();
-		this.created = new Attribution().set(other.getCreated());
-		this.deliveryOptions = new DeliveryOptions().set(other.getDeliveryOptions());
-		this.gradingOptions = new GradingOptions().set(other.getGradingOptions());
-		this.id = other.getId();
-		this.modified = new Attribution().set(other.getModified());
-		this.notificationOptions = new NotificationOptions().set(other.getNotificationOptions());
-		this.parts = new Parts().set(other.getParts());
-		this.pointsOptions = new PointsOptions().set(other.getPointsOptions());
-		this.poolId = other.getPoolId();
-		this.presentation = new Presentation().set(other.getPresentation());
-		this.reviewOptions = new ReviewOptions().set(other.getReviewOptions());
-		this.schedule = new Schedule().set(other.getSchedule());
-		this.specialAccess = new SpecialAccess().set(other.getSpecialAccess());
-		this.status = new AssessmentStatus().set(other.getStatus());
-		this.title = other.title;
-		this.type = other.type;
-
-		return this;
-	}
+	// /**
+	// * Set as a copy of another.
+	// *
+	// * @param other
+	// * The other to copy.
+	// * @return this (for chaining).
+	// */
+	// public Assessment set(Assessment other) {
+	// this.certificateOptions = new CertificateOptions().set(other.getCertificateOptions());
+	// this.context = other.getContext();
+	// this.created = new Attribution().set(other.getCreated());
+	// this.deliveryOptions = new DeliveryOptions().set(other.getDeliveryOptions());
+	// this.gradingOptions = new GradingOptions().set(other.getGradingOptions());
+	// this.id = other.getId();
+	// this.modified = new Attribution().set(other.getModified());
+	// this.notificationOptions = new NotificationOptions().set(other.getNotificationOptions());
+	// this.parts = new Parts().set(other.getParts());
+	// this.pointsOptions = new PointsOptions().set(other.getPointsOptions());
+	// this.poolId = other.getPoolId();
+	// this.presentation = new Presentation().set(other.getPresentation());
+	// this.reviewOptions = new ReviewOptions().set(other.getReviewOptions());
+	// this.schedule = new Schedule().set(other.getSchedule());
+	// this.specialAccess = new SpecialAccess().set(other.getSpecialAccess());
+	// this.status = new AssessmentStatus().set(other.getStatus());
+	// this.title = other.title;
+	// this.type = other.type;
+	//
+	// return this;
+	// }
 }

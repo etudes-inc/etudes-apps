@@ -23,9 +23,12 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -33,36 +36,26 @@ import javax.ws.rs.core.MediaType;
 
 import org.etudes.apps.authentication.AuthenticationService;
 import org.etudes.apps.authentication.model.Authentication;
+import org.etudes.apps.user.UserService;
 import org.etudes.mneme.AssessmentService;
 import org.etudes.mneme.model.Assessment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 @Path("/mneme/")
 public class MnemeAPI {
 
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	class Message {
-		String message = "";
-	}
-
 	final static private Logger logger = LoggerFactory.getLogger(MnemeAPI.class);
 
-	/** The assessment service, injected into the constructor. */
 	final AssessmentService asmtService;
-
 	final AuthenticationService authService;
+	final UserService userService;
 
 	@Inject
-	public MnemeAPI(AssessmentService asmtService, AuthenticationService authService) {
+	public MnemeAPI(AssessmentService asmtService, AuthenticationService authService, UserService userService) {
 		this.asmtService = asmtService;
 		this.authService = authService;
+		this.userService = userService;
 
 		logger.info("Test");
 	}
@@ -70,9 +63,9 @@ public class MnemeAPI {
 	/**
 	 */
 	@GET
-	@Path("/assessments/:id")
+	@Path("/assessments/{id : \\d+}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Assessment getAssessmentById(long id, //
+	public Assessment getAssessmentById(@PathParam("id") long id, //
 			@CookieParam(AuthenticationService.TOKEN) Long authenticationToken, @QueryParam(AuthenticationService.TOKEN_ALT) Long token, //
 			@Context HttpServletRequest req) {
 
@@ -82,7 +75,7 @@ public class MnemeAPI {
 
 			// TODO: allowing through for testing
 			// return null;
-			authentication = Optional.of(new Authentication().setContext("TEST"));
+			authentication = Optional.of(new Authentication().setContext("TEST").setUser(userService.getUser(1l).get()));
 		}
 
 		// get the assessment
@@ -124,7 +117,7 @@ public class MnemeAPI {
 
 			// TODO: allowing through for testing
 			// return null;
-			authentication = Optional.of(new Authentication().setContext("TEST"));
+			authentication = Optional.of(new Authentication().setContext("TEST").setUser(userService.getUser(1l).get()));
 		}
 
 		// get the assessments
@@ -140,21 +133,46 @@ public class MnemeAPI {
 
 	/**
 	 */
-	@GET
-	@Path("/message")
+	@PUT
+	@Path("/assessments/{id : \\d+}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Message getMessage() {
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Assessment saveAssessment(@PathParam("id") long id, //
+			@CookieParam(AuthenticationService.TOKEN) Long authenticationToken, @QueryParam(AuthenticationService.TOKEN_ALT) Long token, //
+			@Context HttpServletRequest req, //
+			Assessment updated) {
 
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		// get the current authentication
+		Optional<Authentication> authentication = authService.authenticateByToken(authenticationToken, token, req);
+		if (!authentication.isPresent()) {
+
+			// TODO: allowing through for testing
+			// return null;
+			authentication = Optional.of(new Authentication().setContext("TEST").setUser(userService.getUser(1l).get()));
 		}
 
-		Message rv = new Message();
-		rv.setMessage("Hello from the sever");
+		final long subscriptionId = authentication.get().getUser().getSubscriptionId();
+		final String context = authentication.get().getContext();
+		final long userId = authentication.get().getUser().get_id();
 
-		return rv;
+		Optional<Assessment> rv = Optional.empty();
+
+		if (id == 0) {
+			rv = asmtService.createAssessment(subscriptionId, context, userId, updated);
+		} else {
+			Optional<Assessment> current = asmtService.getAssessment(id);
+			if (!current.isPresent()) {
+				return null;
+			}
+
+			// verify it belongs to the subscription and context
+			if ((current.get().getSubscription() != subscriptionId) || (!current.get().getContext().equals(context))) {
+				return null;
+			}
+
+			rv = asmtService.saveAssessment(userId, current.get(), updated);
+		}
+
+		return rv.orElse(null);
 	}
 }

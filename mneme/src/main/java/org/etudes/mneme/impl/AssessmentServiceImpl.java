@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import org.etudes.mneme.AssessmentService;
 import org.etudes.mneme.data.AssessmentData;
 import org.etudes.mneme.model.Assessment;
+import org.etudes.mneme.model.Attribution;
 import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,10 +55,8 @@ public class AssessmentServiceImpl implements AssessmentService {
 
 		asmt.setSubscription(subscriptionId);
 		asmt.setContext(context);
-		asmt.getCreated().setDate(now);
-		asmt.getCreated().setUserId(userId);
-		asmt.getModified().setDate(now);
-		asmt.getModified().setUserId(userId);
+		asmt.setCreated(new Attribution(now, userId));
+		asmt.setModified(new Attribution(now, userId));
 
 		// clean up values
 		clean(asmt);
@@ -114,6 +113,18 @@ public class AssessmentServiceImpl implements AssessmentService {
 		return rv;
 	}
 
+	@Override
+	public Optional<Assessment> saveAssessment(long userId, Assessment current, Assessment updated) {
+
+		final Date now = new Date();
+		updated.setModified(new Attribution(now, userId));
+
+		clean(updated);
+
+		Optional<Assessment> rv = data.updateAssessment(current, updated);
+		return rv;
+	}
+
 	/**
 	 * Enforce any rules about values by forcing the values.
 	 * 
@@ -128,6 +139,8 @@ public class AssessmentServiceImpl implements AssessmentService {
 			title = title.trim();
 			if (title.length() > 255) {
 				title = title.substring(0, 255);
+			} else if (title.isEmpty()) {
+				title = null;
 			}
 			asmt.setTitle(title);
 		}

@@ -77,11 +77,13 @@ public class AssessmentDataJDBITest {
 		final long sub = 1l;
 		final long user = 22l;
 		final long user2 = 222l;
+		final String context = "CLASS";
 
 		// add this assessment
 		Assessment a = new Assessment();
 		a.setTitle(title);
 		a.setSubscription(sub);
+		a.setContext(context);
 		a.setType(Type.assignment);
 		a.getStatus().setPublished(true);
 		a.getSchedule().setDue(new Date(20000000l));
@@ -107,6 +109,34 @@ public class AssessmentDataJDBITest {
 	}
 
 	@Test
+	public void testCreateMinimal() {
+
+		final long sub = 1l;
+		final long user = 22l;
+		final long user2 = 222l;
+		final String context = "CLASS";
+
+		// add this assessment
+		Assessment a = new Assessment();
+		a.setSubscription(sub);
+		a.setContext(context);
+		a.getCreated().setDate(new Date());
+		a.getCreated().setUserId(user);
+		a.getModified().setDate(new Date());
+		a.getModified().setUserId(user2);
+
+		Optional<Assessment> created = data.create(a);
+
+		// make sure it got created, and we got an assessment back
+		Assertions.assertThat(created).isNotNull();
+		Assertions.assertThat(created).isPresent();
+
+		// make sure the thing we got back matches what we sent in (id will be set, though)
+		a.setId(created.get().getId());
+		Assertions.assertThat(created.get()).isEqualTo(a);
+	}
+
+	@Test
 	public void testRead() {
 
 		final String title = "TITLE";
@@ -114,6 +144,7 @@ public class AssessmentDataJDBITest {
 		final long sub = 2l;
 		final long user = 22l;
 		final long user2 = 222l;
+		final String context = "CLASS";
 
 		// read by non existing id
 		Optional<Assessment> missing = data.readAssessment(missingId);
@@ -124,6 +155,7 @@ public class AssessmentDataJDBITest {
 		Assessment a = new Assessment();
 		a.setTitle(title);
 		a.setSubscription(sub);
+		a.setContext(context);
 		a.setType(Type.test);
 		a.getStatus().setPublished(false);
 		a.getSchedule().setDue(new Date(20000000l));
@@ -169,11 +201,13 @@ public class AssessmentDataJDBITest {
 		final long user = 22l;
 		final long user2 = 222l;
 		final long user3 = 2222l;
+		final String context = "CLASS";
 
 		// add an assessment
 		Assessment a = new Assessment();
 		a.setTitle(title);
 		a.setSubscription(sub);
+		a.setContext(context);
 		a.setType(Type.test);
 		a.getStatus().setPublished(true);
 		a.getSchedule().setDue(new Date(20000000l));
@@ -243,11 +277,13 @@ public class AssessmentDataJDBITest {
 		final long sub = 4l;
 		final long user = 22l;
 		final long user2 = 222l;
+		final String context = "CLASS";
 
 		// add an assessment
 		Assessment a = new Assessment();
 		a.setTitle(title);
 		a.setSubscription(sub);
+		a.setContext(context);
 		a.setType(Type.offline);
 		a.getStatus().setPublished(true);
 		a.getSchedule().setDue(new Date(20000000l));
@@ -302,11 +338,13 @@ public class AssessmentDataJDBITest {
 		final long sub2 = 6l;
 		final long user = 22l;
 		final long user2 = 222l;
+		final String context = "CLASS";
 
 		// add an assessment
 		Assessment a = new Assessment();
 		a.setTitle(title);
 		a.setSubscription(sub);
+		a.setContext(context);
 		a.setType(Type.assignment);
 		a.getStatus().setPublished(true);
 		a.getSchedule().setDue(new Date(20000000l));
@@ -334,6 +372,7 @@ public class AssessmentDataJDBITest {
 		Assessment a2 = new Assessment();
 		a2.setTitle(title2);
 		a2.setSubscription(sub2);
+		a2.setContext(context);
 		a2.setType(Type.test);
 		a2.getStatus().setPublished(false);
 		a2.getSchedule().setDue(new Date(20000000l));
@@ -467,11 +506,13 @@ public class AssessmentDataJDBITest {
 		final long sub2 = 9l;
 		final long user = 22l;
 		final long user2 = 222l;
+		final String context = "CLASS";
 
 		// add an assessment
 		Assessment a = new Assessment();
 		a.setTitle(title);
 		a.setSubscription(sub);
+		a.setContext(context);
 		a.setType(Type.test);
 		a.getStatus().setPublished(true);
 		a.getSchedule().setDue(new Date(20000000l));
@@ -499,6 +540,7 @@ public class AssessmentDataJDBITest {
 		Assessment a2 = new Assessment();
 		a2.setTitle(title2);
 		a2.setSubscription(sub2);
+		a2.setContext(context);
 		a2.setType(Type.test);
 		a2.getStatus().setPublished(true);
 		a2.getSchedule().setDue(new Date(20000000l));

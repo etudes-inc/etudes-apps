@@ -203,7 +203,7 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 	public Optional<Assessment> updateAssessment(Assessment old, Assessment updated) {
 		Holder<Assessment> rv = new Holder<>();
 
-		// Node:id, subscription and ??? context ??? don't change - TODO: context might
+		// Node:id, subscription and ??? context ??? and created attribution don't change - TODO: context might
 
 		// TODO: more fields...
 
@@ -216,8 +216,6 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 					+ "hideUntilOpen = :hideUntilOpen, "//
 					+ "open = :open, "//
 					+ "until = :until, "//
-					+ "created_by = :created_by, "//
-					+ "created_on = :created_on, "//
 					+ "modified_by = :modified_by, "//
 					+ "modified_on = :modified_on "//
 					+ "where id = :id") //
@@ -229,8 +227,6 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 					.bind("hideUntilOpen", fromBoolean(updated.getSchedule().isHideUntilOpen())) //
 					.bind("open", fromDate(updated.getSchedule().getOpen())) //
 					.bind("until", fromDate(updated.getSchedule().getUntil())) //
-					.bind("created_by", updated.getCreated().getUserId()) //
-					.bind("created_on", fromDate(updated.getCreated().getDate())) //
 					.bind("modified_by", updated.getModified().getUserId()) //
 					.bind("modified_on", fromDate(updated.getModified().getDate())) //
 					.execute();
@@ -258,10 +254,10 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 					+ "title varchar (255)," //
 					+ "atype char (1)," //
 					+ "published tinyint not null," //
-					+ "due bigint not null," //
+					+ "due bigint," //
 					+ "hideUntilOpen tinyint not null," //
-					+ "open bigint not null," //
-					+ "until bigint not null," //
+					+ "open bigint," //
+					+ "until bigint," //
 					+ "created_by bigint not null," //
 					+ "created_on bigint not null," //
 					+ "modified_by bigint not null," //
