@@ -146,4 +146,56 @@ public class AssessmentServiceTest {
 		Assertions.assertThat(created.get().getTitle()).isEqualTo(shortenedTitle);
 		Assertions.assertThat(created.get()).isEqualTo(a);
 	}
+
+	@Test
+	public void testListByContext() {
+	}
+
+	@Test
+	public void testGetById() {
+
+		final String title = "TITLE";
+		final long sub = 1l;
+		final String context = "CLASS";
+		final long user = 22l;
+
+		// add this assessment
+		Assessment a = new Assessment();
+		a.setTitle(title);
+		a.setType(Type.assignment);
+		a.getStatus().setPublished(true);
+		a.getSchedule().setDue(new Date(20000000l));
+		a.getSchedule().setHideUntilOpen(false);
+		a.getSchedule().setOpen(new Date(10000000l));
+		a.getSchedule().setUntil(new Date(30000000l));
+		// TODO: more settings
+
+		Optional<Assessment> created = service.createAssessment(sub, context, user, a);
+
+		// make sure it got created, and we got an assessment back
+		Assertions.assertThat(created).isNotNull();
+		Assertions.assertThat(created).isPresent();
+
+		// make sure the thing we got back matches what we sent in (id, subscription, context, created, modified, will be set, asmt will be 'cleaned', though)
+		a.setId(created.get().getId());
+		a.setSubscription(created.get().getSubscription());
+		a.setContext(created.get().getContext());
+		a.getCreated().set(created.get().getCreated());
+		a.getModified().set(created.get().getModified());
+		Assertions.assertThat(created.get().getId()).isPositive();
+		Assertions.assertThat(created.get().getTitle()).isEqualTo(title);
+		Assertions.assertThat(created.get()).isEqualTo(a);
+
+		// read it by id
+		final long id = created.get().getId();
+		Optional<Assessment> byId = service.getAssessment(id);
+
+		// make sure it got found
+		Assertions.assertThat(byId).isNotNull();
+		Assertions.assertThat(byId).isPresent();
+
+		// and that it matches
+		Assertions.assertThat(byId.get()).isEqualTo(a);
+
+	}
 }

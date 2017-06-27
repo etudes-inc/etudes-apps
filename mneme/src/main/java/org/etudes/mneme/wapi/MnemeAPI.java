@@ -70,6 +70,40 @@ public class MnemeAPI {
 	/**
 	 */
 	@GET
+	@Path("/assessments/:id")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Assessment getAssessmentById(long id, //
+			@CookieParam(AuthenticationService.TOKEN) Long authenticationToken, @QueryParam(AuthenticationService.TOKEN_ALT) Long token, //
+			@Context HttpServletRequest req) {
+
+		// get the current authentication
+		Optional<Authentication> authentication = authService.authenticateByToken(authenticationToken, token, req);
+		if (!authentication.isPresent()) {
+
+			// TODO: allowing through for testing
+			// return null;
+			authentication = Optional.of(new Authentication().setContext("TEST"));
+		}
+
+		// get the assessment
+		Optional<Assessment> rv = asmtService.getAssessment(id);
+		if (!rv.isPresent()) {
+			return null;
+		}
+
+		// verify it belongs to the subscription and context
+		final long subscriptionId = authentication.get().getUser().getSubscriptionId();
+		final String context = authentication.get().getContext();
+		if ((rv.get().getSubscription() != subscriptionId) || (!rv.get().getContext().equals(context))) {
+			return null;
+		}
+
+		return rv.get();
+	}
+
+	/**
+	 */
+	@GET
 	@Path("/assessments")
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Assessment> getAssessments( //
@@ -94,11 +128,12 @@ public class MnemeAPI {
 		}
 
 		// get the assessments
+		final long subscriptionId = authentication.get().getUser().getSubscriptionId();
 		final String context = authentication.get().getContext();
 		final boolean publishedOnly = false;
 		final AssessmentService.Sort sort = AssessmentService.Sort.title_a;
 
-		List<Assessment> rv = asmtService.getContextAssessments(context, sort, publishedOnly);
+		List<Assessment> rv = asmtService.getContextAssessments(subscriptionId, context, sort, publishedOnly);
 
 		return rv;
 	}

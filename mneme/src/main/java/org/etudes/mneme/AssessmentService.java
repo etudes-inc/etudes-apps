@@ -50,6 +50,15 @@ public interface AssessmentService {
 	Optional<Assessment> createAssessment(long subscriptionId, String context, long userId, Assessment asmt);
 
 	/**
+	 * @param id
+	 *            The assessment id.
+	 * @return The assessment with this id, if it exists.
+	 */
+	Optional<Assessment> getAssessment(long id);
+
+	/**
+	 * @param subscriptionId
+	 *            The subscription owning the assessments.
 	 * @param context
 	 *            The context.
 	 * @param sort
@@ -58,5 +67,5 @@ public interface AssessmentService {
 	 *            if only published & valid assessments should be returned, else return unpublished and invalid, too.
 	 * @return All the assessments for the context, sorted. Does not include archived assessments. Unpublished & invalid are optionally included.
 	 */
-	List<Assessment> getContextAssessments(String context, Sort sort, Boolean publishedOnly);
+	List<Assessment> getContextAssessments(long subscriptionId, String context, Sort sort, Boolean publishedOnly);
 }

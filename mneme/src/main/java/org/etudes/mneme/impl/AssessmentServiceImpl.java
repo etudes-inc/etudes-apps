@@ -69,7 +69,14 @@ public class AssessmentServiceImpl implements AssessmentService {
 	}
 
 	@Override
-	public List<Assessment> getContextAssessments(String context, Sort sort, Boolean publishedOnly) {
+	public Optional<Assessment> getAssessment(long id) {
+		Optional<Assessment> rv = data.readAssessment(id);
+
+		return rv;
+	}
+
+	@Override
+	public List<Assessment> getContextAssessments(long subscriptionId, String context, Sort sort, Boolean publishedOnly) {
 		// TODO Auto-generated method stub
 
 		List<Assessment> rv = new ArrayList<>();
