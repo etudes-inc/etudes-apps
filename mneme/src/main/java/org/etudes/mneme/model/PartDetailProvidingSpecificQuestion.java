@@ -20,35 +20,49 @@ package org.etudes.mneme.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * PointsOptions contains the assessment level points details.
+ * PartDetailProvidingSpecificQuestion is a part detail that adds a single, specific question to the part.
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-public class PointsOptions {
+public class PartDetailProvidingSpecificQuestion extends PartDetail {
 
-	/** The assessment points value (overrides points set in parts) - used for offline (which have no parts) */
-	protected float points = 0f;
-
-	/** If the assessment needs to have points defined in the parts. */
-	protected boolean pointsReqired = true;
+	protected long questionId = 0l;
 
 	/**
-	 * Set from another.
+	 * {@inheritDoc}
+	 */
+	public int getNumQuestions() {
+		return 1;
+	}
+
+	/**
+	 * Set as a copy of another.
 	 * 
 	 * @param other
-	 *            The other.
+	 *            The other to copy.
 	 * @return this (for chaining).
 	 */
-	public PointsOptions set(PointsOptions other) {
-		this.points = other.getPoints();
-		this.pointsReqired = other.isPointsReqired();
+	public PartDetailProvidingSpecificQuestion set(PartDetailProvidingSpecificQuestion other) {
+		super.set(other);
+		
+		this.questionId = other.getQuestionId();
 
 		return this;
+	}
+
+	@Override
+	public float sumQuestionPoints() {
+		// TODO: we need to access the points defined for the single question
+		final float questionPoints = 0;
+
+		return questionPoints;
 	}
 }

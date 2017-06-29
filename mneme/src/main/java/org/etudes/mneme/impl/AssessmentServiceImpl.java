@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 import org.etudes.mneme.AssessmentService;
 import org.etudes.mneme.data.AssessmentData;
@@ -37,10 +38,14 @@ import org.slf4j.LoggerFactory;
 public class AssessmentServiceImpl implements AssessmentService {
 	final static private Logger logger = LoggerFactory.getLogger(AssessmentServiceImpl.class);
 
+	@NotNull
 	final protected AssessmentData data;
 
 	/**
 	 * Create the assessment service
+	 * 
+	 * @param data
+	 *            An assessmentData implementation to give access to the persisted data.
 	 */
 	@Inject
 	public AssessmentServiceImpl(AssessmentData data) {
@@ -50,7 +55,6 @@ public class AssessmentServiceImpl implements AssessmentService {
 
 	@Override
 	public Optional<Assessment> createAssessment(long subscriptionId, String context, long userId, Assessment asmt) {
-
 		final Date now = new Date();
 
 		asmt.setSubscription(subscriptionId);
@@ -58,33 +62,28 @@ public class AssessmentServiceImpl implements AssessmentService {
 		asmt.setCreated(new Attribution(now, userId));
 		asmt.setModified(new Attribution(now, userId));
 
-		// clean up values
-		clean(asmt);
+		this.clean(asmt);
 
-		// create
-		Optional<Assessment> rv = data.create(asmt);
-
-		return rv;
+		return this.data.create(asmt);
 	}
 
 	@Override
 	public Optional<Assessment> getAssessment(long id) {
-		Optional<Assessment> rv = data.readAssessment(id);
-
-		return rv;
+		return this.data.readAssessment(id);
 	}
 
 	@Override
-	public List<Assessment> getContextAssessments(long subscriptionId, String context, Sort sort, Boolean publishedOnly) {
+	public List<Assessment> getContextAssessments(long subscriptionId, String context, boolean includeOnlyPublishedAndValid) {
+
 		// TODO Auto-generated method stub
 
 		List<Assessment> rv = new ArrayList<>();
 
 		Assessment a = new Assessment();
 		a.setId(1l);
-		a.getSchedule().setOpen(new Date());
-		a.getSchedule().setDue(new Date());
-		a.getSchedule().setUntil(new Date());
+		a.getSchedule().setOpen(Optional.of(new Date()));
+		a.getSchedule().setDue(Optional.of(new Date()));
+		a.getSchedule().setUntil(Optional.of(new Date()));
 		a.setType(Assessment.Type.assignment);
 		a.setTitle("First Test");
 		a.getStatus().setPublished(true);
@@ -92,9 +91,9 @@ public class AssessmentServiceImpl implements AssessmentService {
 
 		a = new Assessment();
 		a.setId(2l);
-		a.getSchedule().setOpen(new Date());
-		a.getSchedule().setDue(new Date());
-		a.getSchedule().setUntil(new Date());
+		a.getSchedule().setOpen(Optional.of(new Date()));
+		a.getSchedule().setDue(Optional.of(new Date()));
+		a.getSchedule().setUntil(Optional.of(new Date()));
 		a.setType(Assessment.Type.assignment);
 		a.setTitle("Second Test");
 		a.getStatus().setPublished(false);
@@ -102,9 +101,9 @@ public class AssessmentServiceImpl implements AssessmentService {
 
 		a = new Assessment();
 		a.setId(3l);
-		a.getSchedule().setOpen(new Date());
-		a.getSchedule().setDue(new Date());
-		a.getSchedule().setUntil(new Date());
+		a.getSchedule().setOpen(Optional.of(new Date()));
+		a.getSchedule().setDue(Optional.of(new Date()));
+		a.getSchedule().setUntil(Optional.of(new Date()));
 		a.setType(Assessment.Type.assignment);
 		a.setTitle("Third Test");
 		a.getStatus().setPublished(true);
@@ -119,32 +118,32 @@ public class AssessmentServiceImpl implements AssessmentService {
 		final Date now = new Date();
 		updated.setModified(new Attribution(now, userId));
 
-		clean(updated);
+		this.clean(updated);
 
-		Optional<Assessment> rv = data.updateAssessment(current, updated);
-		return rv;
+		return this.data.updateAssessment(current, updated);
 	}
 
 	/**
-	 * Enforce any rules about values by forcing the values.
+	 * Enforce any rules about assessment properties, adjusting the properties as needed.
 	 * 
 	 * @param asmt
 	 *            The assessment to clean
 	 */
 	protected void clean(Assessment asmt) {
 
-		// title: must be 0 .. 255 characters if defined
+		// rule: title must be 0 .. 255 characters if defined
 		if (asmt.getTitle() != null) {
 			String title = asmt.getTitle();
 			title = title.trim();
 			if (title.length() > 255) {
 				title = title.substring(0, 255);
-			} else if (title.isEmpty()) {
-				title = null;
 			}
 			asmt.setTitle(title);
 		}
 
 		// TODO:
+		// part titles to 255
+		// we want points rounded to 2 decimals, and we want it in a reasonable range 0 .. 10000
+		// PartDetailProvidingPoolDraw must have enough question (that are not specifically included) to draw
 	}
 }

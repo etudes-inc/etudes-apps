@@ -20,13 +20,15 @@ package org.etudes.mneme.model;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * Attribution holds a user id and a date, and is used to attribute something to someone and somewhen.
+ * Attribution is used to attribute some user action on some date to an object.
  */
 @Data
 @NoArgsConstructor
@@ -34,10 +36,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Attribution {
 
-	/** The date */
+	@NotNull
 	protected Date date = null;
-
-	/** The user id. */
 	protected long userId = 0l;
 
 	/**
@@ -48,8 +48,8 @@ public class Attribution {
 	 * @return this (for chaining).
 	 */
 	public Attribution set(Attribution other) {
-		this.date = other.date;
-		this.userId = other.userId;
+		this.date = other.getDate();
+		this.userId = other.getUserId();
 
 		return this;
 	}

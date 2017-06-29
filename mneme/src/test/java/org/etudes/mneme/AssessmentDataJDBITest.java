@@ -86,10 +86,10 @@ public class AssessmentDataJDBITest {
 		a.setContext(context);
 		a.setType(Type.assignment);
 		a.getStatus().setPublished(true);
-		a.getSchedule().setDue(new Date(20000000l));
+		a.getSchedule().setDue(Optional.of(new Date(20000000l)));
 		a.getSchedule().setHideUntilOpen(false);
-		a.getSchedule().setOpen(new Date(10000000l));
-		a.getSchedule().setUntil(new Date(30000000l));
+		a.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a.getSchedule().setUntil(Optional.of(new Date(30000000l)));
 		a.getCreated().setDate(new Date());
 		a.getCreated().setUserId(user);
 		a.getModified().setDate(new Date());
@@ -137,140 +137,6 @@ public class AssessmentDataJDBITest {
 	}
 
 	@Test
-	public void testRead() {
-
-		final String title = "TITLE";
-		final long missingId = 99999l;
-		final long sub = 2l;
-		final long user = 22l;
-		final long user2 = 222l;
-		final String context = "CLASS";
-
-		// read by non existing id
-		Optional<Assessment> missing = data.readAssessment(missingId);
-		Assertions.assertThat(missing).isNotNull();
-		Assertions.assertThat(missing).isNotPresent();
-
-		// add an assessment
-		Assessment a = new Assessment();
-		a.setTitle(title);
-		a.setSubscription(sub);
-		a.setContext(context);
-		a.setType(Type.test);
-		a.getStatus().setPublished(false);
-		a.getSchedule().setDue(new Date(20000000l));
-		a.getSchedule().setHideUntilOpen(false);
-		a.getSchedule().setOpen(new Date(10000000l));
-		a.getSchedule().setUntil(new Date(30000000l));
-		a.getCreated().setDate(new Date());
-		a.getCreated().setUserId(user);
-		a.getModified().setDate(new Date());
-		a.getModified().setUserId(user2);
-		// TODO: more settings
-
-		Optional<Assessment> created = data.create(a);
-
-		// make sure it got created, and we got an assessment back
-		Assertions.assertThat(created).isNotNull();
-		Assertions.assertThat(created).isPresent();
-
-		// make sure the thing we got back matches what we sent in (id will be set, though)
-		a.setId(created.get().getId());
-		Assertions.assertThat(created.get().getTitle()).isEqualTo(title);
-		Assertions.assertThat(created.get()).isEqualTo(a);
-
-		final long id = created.get().getId();
-
-		// read by id
-		Optional<Assessment> read = data.readAssessment(id);
-
-		// make sure we got it
-		Assertions.assertThat(read).isNotNull();
-		Assertions.assertThat(read).isPresent();
-
-		// and that it matches as created
-		Assertions.assertThat(read.get()).isEqualTo(created.get());
-	}
-
-	@Test
-	public void testUpdate() {
-
-		final String title = "TITLE";
-		final String titleUpdated = "New Title";
-		final long sub = 3l;
-		final long user = 22l;
-		final long user2 = 222l;
-		final long user3 = 2222l;
-		final String context = "CLASS";
-
-		// add an assessment
-		Assessment a = new Assessment();
-		a.setTitle(title);
-		a.setSubscription(sub);
-		a.setContext(context);
-		a.setType(Type.test);
-		a.getStatus().setPublished(true);
-		a.getSchedule().setDue(new Date(20000000l));
-		a.getSchedule().setHideUntilOpen(false);
-		a.getSchedule().setOpen(new Date(10000000l));
-		a.getSchedule().setUntil(new Date(30000000l));
-		a.getCreated().setDate(new Date());
-		a.getCreated().setUserId(user);
-		a.getModified().setDate(new Date());
-		a.getModified().setUserId(user2);
-		// TODO: more settings
-
-		Optional<Assessment> created = data.create(a);
-
-		// make sure it got created, and we got an assessment back
-		Assertions.assertThat(created).isNotNull();
-		Assertions.assertThat(created).isPresent();
-
-		// make sure the thing we got back matches what we sent in (id will be set, though)
-		a.setId(created.get().getId());
-		Assertions.assertThat(created.get().getTitle()).isEqualTo(title);
-		Assertions.assertThat(created.get()).isEqualTo(a);
-
-		final long id = created.get().getId();
-
-		// read by id
-		Optional<Assessment> read = data.readAssessment(id);
-
-		// make sure we got it
-		Assertions.assertThat(read).isNotNull();
-		Assertions.assertThat(read).isPresent();
-
-		// and that it matches as created
-		Assertions.assertThat(read.get()).isEqualTo(created.get());
-
-		// get another copy
-		Optional<Assessment> toChange = data.readAssessment(id);
-
-		// make sure we got it
-		Assertions.assertThat(toChange).isPresent();
-
-		// update
-		toChange.get().setTitle(titleUpdated);
-		toChange.get().setType(Type.assignment);
-		toChange.get().getSchedule().setDue(new Date(25000000l));
-		toChange.get().getSchedule().setHideUntilOpen(true);
-		toChange.get().getSchedule().setOpen(new Date(15000000l));
-		toChange.get().getSchedule().setUntil(new Date(35000000l));
-		toChange.get().getModified().setDate(new Date());
-		toChange.get().getModified().setUserId(user3);
-		// TODO: more changes
-
-		Optional<Assessment> updated = data.updateAssessment(read.get(), toChange.get());
-
-		// make sure we got the updated version
-		Assertions.assertThat(updated).isNotNull();
-		Assertions.assertThat(updated).isPresent();
-
-		// and that it matches
-		Assertions.assertThat(updated.get()).isEqualTo(toChange.get());
-	}
-
-	@Test
 	public void testDelete() {
 
 		final String title = "TITLE";
@@ -286,10 +152,10 @@ public class AssessmentDataJDBITest {
 		a.setContext(context);
 		a.setType(Type.offline);
 		a.getStatus().setPublished(true);
-		a.getSchedule().setDue(new Date(20000000l));
+		a.getSchedule().setDue(Optional.of(new Date(20000000l)));
 		a.getSchedule().setHideUntilOpen(false);
-		a.getSchedule().setOpen(new Date(10000000l));
-		a.getSchedule().setUntil(new Date(30000000l));
+		a.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a.getSchedule().setUntil(Optional.of(new Date(30000000l)));
 		a.getCreated().setDate(new Date());
 		a.getCreated().setUserId(user);
 		a.getModified().setDate(new Date());
@@ -330,174 +196,6 @@ public class AssessmentDataJDBITest {
 	}
 
 	@Test
-	public void testReadBySubscription() {
-
-		final String title = "TITLE";
-		final String title2 = "Other Title";
-		final long sub = 5l;
-		final long sub2 = 6l;
-		final long user = 22l;
-		final long user2 = 222l;
-		final String context = "CLASS";
-
-		// add an assessment
-		Assessment a = new Assessment();
-		a.setTitle(title);
-		a.setSubscription(sub);
-		a.setContext(context);
-		a.setType(Type.assignment);
-		a.getStatus().setPublished(true);
-		a.getSchedule().setDue(new Date(20000000l));
-		a.getSchedule().setHideUntilOpen(false);
-		a.getSchedule().setOpen(new Date(10000000l));
-		a.getSchedule().setUntil(new Date(30000000l));
-		a.getCreated().setDate(new Date());
-		a.getCreated().setUserId(user);
-		a.getModified().setDate(new Date());
-		a.getModified().setUserId(user2);
-		// TODO: more settings
-
-		Optional<Assessment> created = data.create(a);
-
-		// make sure it got created, and we got an assessment back
-		Assertions.assertThat(created).isNotNull();
-		Assertions.assertThat(created).isPresent();
-
-		// make sure the thing we got back matches what we sent in (id will be set, though)
-		a.setId(created.get().getId());
-		Assertions.assertThat(created.get().getTitle()).isEqualTo(title);
-		Assertions.assertThat(created.get()).isEqualTo(a);
-
-		// create another in another subscription
-		Assessment a2 = new Assessment();
-		a2.setTitle(title2);
-		a2.setSubscription(sub2);
-		a2.setContext(context);
-		a2.setType(Type.test);
-		a2.getStatus().setPublished(false);
-		a2.getSchedule().setDue(new Date(20000000l));
-		a2.getSchedule().setHideUntilOpen(false);
-		a2.getSchedule().setOpen(new Date(10000000l));
-		a2.getSchedule().setUntil(new Date(30000000l));
-		a2.getCreated().setDate(new Date());
-		a2.getCreated().setUserId(user);
-		a2.getModified().setDate(new Date());
-		a2.getModified().setUserId(user2);
-		// TODO: more settings
-
-		Optional<Assessment> created2 = data.create(a2);
-
-		// make sure it got created, and we got an assessment back
-		Assertions.assertThat(created2).isNotNull();
-		Assertions.assertThat(created2).isPresent();
-
-		// make sure the thing we got back matches what we sent in (id will be set, though)
-		a2.setId(created2.get().getId());
-		Assertions.assertThat(created2.get().getTitle()).isEqualTo(title2);
-		Assertions.assertThat(created2.get()).isEqualTo(a2);
-
-		// read by subscription id - s1
-		List<Assessment> asmtsS1 = data.readAssessments(sub);
-
-		// make sure we got a list of 1 entry, the one for s1
-		Assertions.assertThat(asmtsS1).isNotNull();
-		Assertions.assertThat(asmtsS1).hasSize(1);
-		Assertions.assertThat(asmtsS1).contains(created.get());
-
-		// read by subscription id - s2
-		List<Assessment> asmtsS2 = data.readAssessments(sub2);
-
-		// make sure we got a list of 1 entry, the one for s2
-		Assertions.assertThat(asmtsS2).isNotNull();
-		Assertions.assertThat(asmtsS2).hasSize(1);
-		Assertions.assertThat(asmtsS2).contains(created2.get());
-	}
-
-	@Test
-	public void testReadByContext() {
-
-		final String title = "TITLE";
-		final String title2 = "Other Title";
-		final long sub = 7l;
-		final String context = "A";
-		final String context2 = "B";
-		final long user = 22l;
-		final long user2 = 222l;
-
-		// add an assessment
-		Assessment a = new Assessment();
-		a.setTitle(title);
-		a.setSubscription(sub);
-		a.setContext(context);
-		a.setType(Type.assignment);
-		a.getStatus().setPublished(true);
-		a.getSchedule().setDue(new Date(20000000l));
-		a.getSchedule().setHideUntilOpen(false);
-		a.getSchedule().setOpen(new Date(10000000l));
-		a.getSchedule().setUntil(new Date(30000000l));
-		a.getCreated().setDate(new Date());
-		a.getCreated().setUserId(user);
-		a.getModified().setDate(new Date());
-		a.getModified().setUserId(user2);
-		// TODO: more settings
-
-		Optional<Assessment> created = data.create(a);
-
-		// make sure it got created, and we got an assessment back
-		Assertions.assertThat(created).isNotNull();
-		Assertions.assertThat(created).isPresent();
-
-		// make sure the thing we got back matches what we sent in (id will be set, though)
-		a.setId(created.get().getId());
-		Assertions.assertThat(created.get().getTitle()).isEqualTo(title);
-		Assertions.assertThat(created.get()).isEqualTo(a);
-
-		// create another in another context
-		Assessment a2 = new Assessment();
-		a2.setTitle(title2);
-		a2.setSubscription(sub);
-		a2.setContext(context2);
-		a2.setType(Type.offline);
-		a2.getStatus().setPublished(true);
-		a2.getSchedule().setDue(new Date(20000000l));
-		a2.getSchedule().setHideUntilOpen(false);
-		a2.getSchedule().setOpen(new Date(10000000l));
-		a2.getSchedule().setUntil(new Date(30000000l));
-		a2.getCreated().setDate(new Date());
-		a2.getCreated().setUserId(user);
-		a2.getModified().setDate(new Date());
-		a2.getModified().setUserId(user2);
-		// TODO: more settings
-
-		Optional<Assessment> created2 = data.create(a2);
-
-		// make sure it got created, and we got an assessment back
-		Assertions.assertThat(created2).isNotNull();
-		Assertions.assertThat(created2).isPresent();
-
-		// make sure the thing we got back matches what we sent in (id will be set, though)
-		a2.setId(created2.get().getId());
-		Assertions.assertThat(created2.get().getTitle()).isEqualTo(title2);
-		Assertions.assertThat(created2.get()).isEqualTo(a2);
-
-		// read by context - 1
-		List<Assessment> asmtsS1 = data.readAssessments(sub, context);
-
-		// make sure we got a list of 1 entry, the one for context
-		Assertions.assertThat(asmtsS1).isNotNull();
-		Assertions.assertThat(asmtsS1).hasSize(1);
-		Assertions.assertThat(asmtsS1).contains(created.get());
-
-		// read by context - 2
-		List<Assessment> asmtsS2 = data.readAssessments(sub, context2);
-
-		// make sure we got a list of 1 entry, the one for context2
-		Assertions.assertThat(asmtsS2).isNotNull();
-		Assertions.assertThat(asmtsS2).hasSize(1);
-		Assertions.assertThat(asmtsS2).contains(created2.get());
-	}
-
-	@Test
 	public void testDeleteBySubscription() {
 
 		final String title = "TITLE";
@@ -515,10 +213,10 @@ public class AssessmentDataJDBITest {
 		a.setContext(context);
 		a.setType(Type.test);
 		a.getStatus().setPublished(true);
-		a.getSchedule().setDue(new Date(20000000l));
+		a.getSchedule().setDue(Optional.of(new Date(20000000l)));
 		a.getSchedule().setHideUntilOpen(false);
-		a.getSchedule().setOpen(new Date(10000000l));
-		a.getSchedule().setUntil(new Date(30000000l));
+		a.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a.getSchedule().setUntil(Optional.of(new Date(30000000l)));
 		a.getCreated().setDate(new Date());
 		a.getCreated().setUserId(user);
 		a.getModified().setDate(new Date());
@@ -543,10 +241,10 @@ public class AssessmentDataJDBITest {
 		a2.setContext(context);
 		a2.setType(Type.test);
 		a2.getStatus().setPublished(true);
-		a2.getSchedule().setDue(new Date(20000000l));
+		a2.getSchedule().setDue(Optional.of(new Date(20000000l)));
 		a2.getSchedule().setHideUntilOpen(false);
-		a2.getSchedule().setOpen(new Date(10000000l));
-		a2.getSchedule().setUntil(new Date(30000000l));
+		a2.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a2.getSchedule().setUntil(Optional.of(new Date(30000000l)));
 		a2.getCreated().setDate(new Date());
 		a2.getCreated().setUserId(user);
 		a2.getModified().setDate(new Date());
@@ -598,5 +296,307 @@ public class AssessmentDataJDBITest {
 		Assertions.assertThat(asmtsS2).isNotNull();
 		Assertions.assertThat(asmtsS2).hasSize(1);
 		Assertions.assertThat(asmtsS2).contains(created2.get());
+	}
+
+	@Test
+	public void testRead() {
+
+		final String title = "TITLE";
+		final long missingId = 99999l;
+		final long sub = 2l;
+		final long user = 22l;
+		final long user2 = 222l;
+		final String context = "CLASS";
+
+		// read by non existing id
+		Optional<Assessment> missing = data.readAssessment(missingId);
+		Assertions.assertThat(missing).isNotNull();
+		Assertions.assertThat(missing).isNotPresent();
+
+		// add an assessment
+		Assessment a = new Assessment();
+		a.setTitle(title);
+		a.setSubscription(sub);
+		a.setContext(context);
+		a.setType(Type.test);
+		a.getStatus().setPublished(false);
+		a.getSchedule().setDue(Optional.of(new Date(20000000l)));
+		a.getSchedule().setHideUntilOpen(false);
+		a.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a.getSchedule().setUntil(Optional.of(new Date(30000000l)));
+		a.getCreated().setDate(new Date());
+		a.getCreated().setUserId(user);
+		a.getModified().setDate(new Date());
+		a.getModified().setUserId(user2);
+		// TODO: more settings
+
+		Optional<Assessment> created = data.create(a);
+
+		// make sure it got created, and we got an assessment back
+		Assertions.assertThat(created).isNotNull();
+		Assertions.assertThat(created).isPresent();
+
+		// make sure the thing we got back matches what we sent in (id will be set, though)
+		a.setId(created.get().getId());
+		Assertions.assertThat(created.get().getTitle()).isEqualTo(title);
+		Assertions.assertThat(created.get()).isEqualTo(a);
+
+		final long id = created.get().getId();
+
+		// read by id
+		Optional<Assessment> read = data.readAssessment(id);
+
+		// make sure we got it
+		Assertions.assertThat(read).isNotNull();
+		Assertions.assertThat(read).isPresent();
+
+		// and that it matches as created
+		Assertions.assertThat(read.get()).isEqualTo(created.get());
+	}
+
+	@Test
+	public void testReadByContext() {
+
+		final String title = "TITLE";
+		final String title2 = "Other Title";
+		final long sub = 7l;
+		final String context = "A";
+		final String context2 = "B";
+		final long user = 22l;
+		final long user2 = 222l;
+
+		// add an assessment
+		Assessment a = new Assessment();
+		a.setTitle(title);
+		a.setSubscription(sub);
+		a.setContext(context);
+		a.setType(Type.assignment);
+		a.getStatus().setPublished(true);
+		a.getSchedule().setDue(Optional.of(new Date(20000000l)));
+		a.getSchedule().setHideUntilOpen(false);
+		a.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a.getSchedule().setUntil(Optional.of(new Date(30000000l)));
+		a.getCreated().setDate(new Date());
+		a.getCreated().setUserId(user);
+		a.getModified().setDate(new Date());
+		a.getModified().setUserId(user2);
+		// TODO: more settings
+
+		Optional<Assessment> created = data.create(a);
+
+		// make sure it got created, and we got an assessment back
+		Assertions.assertThat(created).isNotNull();
+		Assertions.assertThat(created).isPresent();
+
+		// make sure the thing we got back matches what we sent in (id will be set, though)
+		a.setId(created.get().getId());
+		Assertions.assertThat(created.get().getTitle()).isEqualTo(title);
+		Assertions.assertThat(created.get()).isEqualTo(a);
+
+		// create another in another context
+		Assessment a2 = new Assessment();
+		a2.setTitle(title2);
+		a2.setSubscription(sub);
+		a2.setContext(context2);
+		a2.setType(Type.offline);
+		a2.getStatus().setPublished(true);
+		a2.getSchedule().setDue(Optional.of(new Date(20000000l)));
+		a2.getSchedule().setHideUntilOpen(false);
+		a2.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a2.getSchedule().setUntil(Optional.of(new Date(30000000l)));
+		a2.getCreated().setDate(new Date());
+		a2.getCreated().setUserId(user);
+		a2.getModified().setDate(new Date());
+		a2.getModified().setUserId(user2);
+		// TODO: more settings
+
+		Optional<Assessment> created2 = data.create(a2);
+
+		// make sure it got created, and we got an assessment back
+		Assertions.assertThat(created2).isNotNull();
+		Assertions.assertThat(created2).isPresent();
+
+		// make sure the thing we got back matches what we sent in (id will be set, though)
+		a2.setId(created2.get().getId());
+		Assertions.assertThat(created2.get().getTitle()).isEqualTo(title2);
+		Assertions.assertThat(created2.get()).isEqualTo(a2);
+
+		// read by context - 1
+		List<Assessment> asmtsS1 = data.readAssessments(sub, context);
+
+		// make sure we got a list of 1 entry, the one for context
+		Assertions.assertThat(asmtsS1).isNotNull();
+		Assertions.assertThat(asmtsS1).hasSize(1);
+		Assertions.assertThat(asmtsS1).contains(created.get());
+
+		// read by context - 2
+		List<Assessment> asmtsS2 = data.readAssessments(sub, context2);
+
+		// make sure we got a list of 1 entry, the one for context2
+		Assertions.assertThat(asmtsS2).isNotNull();
+		Assertions.assertThat(asmtsS2).hasSize(1);
+		Assertions.assertThat(asmtsS2).contains(created2.get());
+	}
+
+	@Test
+	public void testReadBySubscription() {
+
+		final String title = "TITLE";
+		final String title2 = "Other Title";
+		final long sub = 5l;
+		final long sub2 = 6l;
+		final long user = 22l;
+		final long user2 = 222l;
+		final String context = "CLASS";
+
+		// add an assessment
+		Assessment a = new Assessment();
+		a.setTitle(title);
+		a.setSubscription(sub);
+		a.setContext(context);
+		a.setType(Type.assignment);
+		a.getStatus().setPublished(true);
+		a.getSchedule().setDue(Optional.of(new Date(20000000l)));
+		a.getSchedule().setHideUntilOpen(false);
+		a.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a.getSchedule().setUntil(Optional.of(new Date(30000000l)));
+		a.getCreated().setDate(new Date());
+		a.getCreated().setUserId(user);
+		a.getModified().setDate(new Date());
+		a.getModified().setUserId(user2);
+		// TODO: more settings
+
+		Optional<Assessment> created = data.create(a);
+
+		// make sure it got created, and we got an assessment back
+		Assertions.assertThat(created).isNotNull();
+		Assertions.assertThat(created).isPresent();
+
+		// make sure the thing we got back matches what we sent in (id will be set, though)
+		a.setId(created.get().getId());
+		Assertions.assertThat(created.get().getTitle()).isEqualTo(title);
+		Assertions.assertThat(created.get()).isEqualTo(a);
+
+		// create another in another subscription
+		Assessment a2 = new Assessment();
+		a2.setTitle(title2);
+		a2.setSubscription(sub2);
+		a2.setContext(context);
+		a2.setType(Type.test);
+		a2.getStatus().setPublished(false);
+		a2.getSchedule().setDue(Optional.of(new Date(20000000)));
+		a2.getSchedule().setHideUntilOpen(false);
+		a2.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a2.getSchedule().setUntil(Optional.of(new Date(30000000l)));
+		a2.getCreated().setDate(new Date());
+		a2.getCreated().setUserId(user);
+		a2.getModified().setDate(new Date());
+		a2.getModified().setUserId(user2);
+		// TODO: more settings
+
+		Optional<Assessment> created2 = data.create(a2);
+
+		// make sure it got created, and we got an assessment back
+		Assertions.assertThat(created2).isNotNull();
+		Assertions.assertThat(created2).isPresent();
+
+		// make sure the thing we got back matches what we sent in (id will be set, though)
+		a2.setId(created2.get().getId());
+		Assertions.assertThat(created2.get().getTitle()).isEqualTo(title2);
+		Assertions.assertThat(created2.get()).isEqualTo(a2);
+
+		// read by subscription id - s1
+		List<Assessment> asmtsS1 = data.readAssessments(sub);
+
+		// make sure we got a list of 1 entry, the one for s1
+		Assertions.assertThat(asmtsS1).isNotNull();
+		Assertions.assertThat(asmtsS1).hasSize(1);
+		Assertions.assertThat(asmtsS1).contains(created.get());
+
+		// read by subscription id - s2
+		List<Assessment> asmtsS2 = data.readAssessments(sub2);
+
+		// make sure we got a list of 1 entry, the one for s2
+		Assertions.assertThat(asmtsS2).isNotNull();
+		Assertions.assertThat(asmtsS2).hasSize(1);
+		Assertions.assertThat(asmtsS2).contains(created2.get());
+	}
+
+	@Test
+	public void testUpdate() {
+
+		final String title = "TITLE";
+		final String titleUpdated = "New Title";
+		final long sub = 3l;
+		final long user = 22l;
+		final long user2 = 222l;
+		final long user3 = 2222l;
+		final String context = "CLASS";
+
+		// add an assessment
+		Assessment a = new Assessment();
+		a.setTitle(title);
+		a.setSubscription(sub);
+		a.setContext(context);
+		a.setType(Type.test);
+		a.getStatus().setPublished(true);
+		a.getSchedule().setDue(Optional.of(new Date(20000000l)));
+		a.getSchedule().setHideUntilOpen(false);
+		a.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a.getSchedule().setUntil(Optional.of(new Date(30000000l)));
+		a.getCreated().setDate(new Date());
+		a.getCreated().setUserId(user);
+		a.getModified().setDate(new Date());
+		a.getModified().setUserId(user2);
+		// TODO: more settings
+
+		Optional<Assessment> created = data.create(a);
+
+		// make sure it got created, and we got an assessment back
+		Assertions.assertThat(created).isNotNull();
+		Assertions.assertThat(created).isPresent();
+
+		// make sure the thing we got back matches what we sent in (id will be set, though)
+		a.setId(created.get().getId());
+		Assertions.assertThat(created.get().getTitle()).isEqualTo(title);
+		Assertions.assertThat(created.get()).isEqualTo(a);
+
+		final long id = created.get().getId();
+
+		// read by id
+		Optional<Assessment> read = data.readAssessment(id);
+
+		// make sure we got it
+		Assertions.assertThat(read).isNotNull();
+		Assertions.assertThat(read).isPresent();
+
+		// and that it matches as created
+		Assertions.assertThat(read.get()).isEqualTo(created.get());
+
+		// get another copy
+		Optional<Assessment> toChange = data.readAssessment(id);
+
+		// make sure we got it
+		Assertions.assertThat(toChange).isPresent();
+
+		// update
+		toChange.get().setTitle(titleUpdated);
+		toChange.get().setType(Type.assignment);
+		toChange.get().getSchedule().setDue(Optional.of(new Date(25000000l)));
+		toChange.get().getSchedule().setHideUntilOpen(true);
+		toChange.get().getSchedule().setOpen(Optional.of(new Date(15000000l)));
+		toChange.get().getSchedule().setUntil(Optional.of(new Date(35000000l)));
+		toChange.get().getModified().setDate(new Date());
+		toChange.get().getModified().setUserId(user3);
+		// TODO: more changes
+
+		Optional<Assessment> updated = data.updateAssessment(read.get(), toChange.get());
+
+		// make sure we got the updated version
+		Assertions.assertThat(updated).isNotNull();
+		Assertions.assertThat(updated).isPresent();
+
+		// and that it matches
+		Assertions.assertThat(updated.get()).isEqualTo(toChange.get());
 	}
 }

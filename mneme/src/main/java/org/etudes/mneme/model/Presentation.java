@@ -18,16 +18,14 @@
 
 package org.etudes.mneme.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 /**
- * Presentation defines a rich text with attachments.
+ * A Presentation defines rich text (TODO: with attachments).
  */
 @Data
 @NoArgsConstructor
@@ -35,43 +33,16 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Presentation {
 
-	/** The attachments for the presentation. */
-	protected List<Reference> attachments = new ArrayList<Reference>();
-
-	/** The rich text (html) part of the presentation. */
-	protected String text = null;
+	/** The rich text (HTML) part of the presentation. */
+	@NonNull
+	protected String text = "";
 
 	/**
-	 * @return if the text and attachments are empty.
+	 * @return if totally empty.
 	 */
 	public boolean isEmpty() {
-		return ((text == null) && attachments.isEmpty());
+		return (this.text.isEmpty());
 	}
-
-	/**
-	 * Remove the attachment that matches this reference string.
-	 * 
-	 * @param reference
-	 *            The attachment to remove.
-	 */
-	public void removeAttachment(Reference reference) {
-		this.attachments.remove(reference);
-	}
-
-	/**
-	 * Set the attachments to these references.
-	 * 
-	 * @param references
-	 *            The list of attachment references.
-	 */
-	public void setAttachments(List<Reference> references) {
-		this.attachments.clear();
-		if (references != null) {
-			this.attachments.addAll(references);
-		}
-	}
-
-	// TODO: StringUtil.trimToNull(text) on setText()
 
 	/**
 	 * Set as a copy of the other.
@@ -81,8 +52,6 @@ public class Presentation {
 	 * @return this (for chaining).
 	 */
 	public Presentation set(Presentation other) {
-		this.attachments = new ArrayList<Reference>(other.attachments.size());
-		this.attachments.addAll(other.attachments);
 		this.text = other.text;
 
 		return this;

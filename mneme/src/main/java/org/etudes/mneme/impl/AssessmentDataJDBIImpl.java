@@ -20,8 +20,10 @@ package org.etudes.mneme.impl;
 
 import static org.etudes.apps.db.DB.fromBoolean;
 import static org.etudes.apps.db.DB.fromDate;
+import static org.etudes.apps.db.DB.fromOptionalDate;
 import static org.etudes.apps.db.DB.toBoolean;
 import static org.etudes.apps.db.DB.toDate;
+import static org.etudes.apps.db.DB.toOptionalDate;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,10 +59,10 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 			rv.setTitle(r.getString("title"));
 			rv.setType(Assessment.Type.fromCode(r.getString("atype")));
 			rv.getStatus().setPublished(toBoolean(r.getInt("published")));
-			rv.getSchedule().setDue(toDate(r.getLong("due")));
+			rv.getSchedule().setDue(toOptionalDate(r.getLong("due")));
 			rv.getSchedule().setHideUntilOpen(toBoolean(r.getInt("hideUntilOpen")));
-			rv.getSchedule().setOpen(toDate(r.getLong("open")));
-			rv.getSchedule().setUntil(toDate(r.getLong("until")));
+			rv.getSchedule().setOpen(toOptionalDate(r.getLong("open")));
+			rv.getSchedule().setUntil(toOptionalDate(r.getLong("until")));
 			rv.getCreated().setUserId(r.getLong("created_by"));
 			rv.getCreated().setDate(toDate(r.getLong("created_on")));
 			rv.getModified().setUserId(r.getLong("modified_by"));
@@ -79,8 +81,8 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 
 		logger.info("AssessmentDataJDBIImpl() with DBI: " + this.db);
 
-		if (db.isAutoDdl()) {
-			createTables();
+		if (this.db.isAutoDdl()) {
+			this.createTables();
 		}
 	}
 
@@ -88,7 +90,7 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 	public Optional<Assessment> create(Assessment asmt) {
 		Holder<Assessment> rv = new Holder<>();
 
-		db.transact(h -> {
+		this.db.transact(h -> {
 			Long id = h.createStatement(
 					"insert into assessment (subscription, context, title, atype, published, due, hideUntilOpen, open, until, created_by, created_on, modified_by, modified_on)" //
 							+ " values (:subscription, :context, :title, :atype, :published, :due, :hideUntilOpen, :open, :until, :created_by, :created_on, :modified_by, :modified_on)")
@@ -97,22 +99,22 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 					.bind("title", asmt.getTitle()) //
 					.bind("atype", asmt.getType().getCode()) //
 					.bind("published", fromBoolean(asmt.getStatus().isPublished())) //
-					.bind("due", fromDate(asmt.getSchedule().getDue())) //
+					.bind("due", fromOptionalDate(asmt.getSchedule().getDue())) //
 					.bind("hideUntilOpen", fromBoolean(asmt.getSchedule().isHideUntilOpen())) //
-					.bind("open", fromDate(asmt.getSchedule().getOpen())) //
-					.bind("until", fromDate(asmt.getSchedule().getUntil())) //
+					.bind("open", fromOptionalDate(asmt.getSchedule().getOpen())) //
+					.bind("until", fromOptionalDate(asmt.getSchedule().getUntil())) //
 					.bind("created_by", asmt.getCreated().getUserId()) //
 					.bind("created_on", fromDate(asmt.getCreated().getDate())) //
 					.bind("modified_by", asmt.getModified().getUserId()) //
 					.bind("modified_on", fromDate(asmt.getModified().getDate())) //
 					.executeAndReturnGeneratedKeys(LongColumnMapper.PRIMITIVE).first();
 
-			Assessment auth = h.createQuery(
+			Assessment a = h.createQuery(
 					"select id, subscription, context, title, atype, published, due, hideUntilOpen, open, until, created_by, created_on, modified_by, modified_on from assessment where id = :id") //
 					.bind("id", id) //
 					.map(new AssessmentMapper()).first();
 
-			rv.value = Optional.ofNullable(auth);
+			rv.value = Optional.ofNullable(a);
 		});
 
 		return rv.value;
@@ -122,7 +124,7 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 	public boolean delete(Assessment asmt) {
 		Holder<Boolean> rv = new Holder<>();
 
-		db.transact(h -> {
+		this.db.transact(h -> {
 			h.createStatement("delete from assessment where id = :id") //
 					.bind("id", asmt.getId()) //
 					.execute();
@@ -137,7 +139,7 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 	public boolean deleteAssessments(long subscriptionId) {
 		Holder<Boolean> rv = new Holder<>();
 
-		db.transact(h -> {
+		this.db.transact(h -> {
 			h.createStatement("delete from assessment where subscription = :subscriptionId") //
 					.bind("subscriptionId", subscriptionId) //
 					.execute();
@@ -152,7 +154,7 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 	public Optional<Assessment> readAssessment(long id) {
 		Holder<Assessment> rv = new Holder<>();
 
-		db.transact(h -> {
+		this.db.transact(h -> {
 			Assessment a = h.createQuery(
 					"select id, subscription, context, title, atype, published, due, hideUntilOpen, open, until, created_by, created_on, modified_by, modified_on from assessment where id = :id") //
 					.bind("id", id).map(new AssessmentMapper()) //
@@ -168,14 +170,14 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 	public List<Assessment> readAssessments(long subscriptionId) {
 		Holder<List<Assessment>> rv = new Holder<>();
 
-		db.transact(h -> {
-			List<Assessment> auths = h.createQuery(
+		this.db.transact(h -> {
+			List<Assessment> asmts = h.createQuery(
 					"select id, subscription, context, title, atype, published, due, hideUntilOpen, open, until, created_by, created_on, modified_by, modified_on from assessment where subscription = :subscription") //
 					.bind("subscription", subscriptionId) //
 					.map(new AssessmentMapper()) //
 					.list();
 
-			rv.value = Optional.ofNullable(auths);
+			rv.value = Optional.ofNullable(asmts);
 		});
 
 		return rv.value.orElse(new ArrayList<>());
@@ -185,15 +187,15 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 	public List<Assessment> readAssessments(long subscriptionId, String context) {
 		Holder<List<Assessment>> rv = new Holder<>();
 
-		db.transact(h -> {
-			List<Assessment> auths = h.createQuery(
+		this.db.transact(h -> {
+			List<Assessment> asmts = h.createQuery(
 					"select id, subscription, context, title, atype, published, due, hideUntilOpen, open, until, created_by, created_on, modified_by, modified_on from assessment where subscription = :subscription and context = :context") //
 					.bind("subscription", subscriptionId) //
 					.bind("context", context) //
 					.map(new AssessmentMapper()) //
 					.list();
 
-			rv.value = Optional.ofNullable(auths);
+			rv.value = Optional.ofNullable(asmts);
 		});
 
 		return rv.value.orElse(new ArrayList<>());
@@ -207,7 +209,7 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 
 		// TODO: more fields...
 
-		db.transact(h -> {
+		this.db.transact(h -> {
 			h.createStatement("update assessment set " //
 					+ "title = :title, "//
 					+ "atype = :atype, " //
@@ -223,20 +225,20 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 					.bind("id", old.getId()) //
 					.bind("atype", updated.getType().getCode()) //
 					.bind("published", fromBoolean(updated.getStatus().isPublished())) //
-					.bind("due", fromDate(updated.getSchedule().getDue())) //
+					.bind("due", fromOptionalDate(updated.getSchedule().getDue())) //
 					.bind("hideUntilOpen", fromBoolean(updated.getSchedule().isHideUntilOpen())) //
-					.bind("open", fromDate(updated.getSchedule().getOpen())) //
-					.bind("until", fromDate(updated.getSchedule().getUntil())) //
+					.bind("open", fromOptionalDate(updated.getSchedule().getOpen())) //
+					.bind("until", fromOptionalDate(updated.getSchedule().getUntil())) //
 					.bind("modified_by", updated.getModified().getUserId()) //
 					.bind("modified_on", fromDate(updated.getModified().getDate())) //
 					.execute();
 
-			Assessment auth = h.createQuery(
+			Assessment a = h.createQuery(
 					"select id, subscription, context, title, atype, published, due, hideUntilOpen, open, until, created_by, created_on, modified_by, modified_on from assessment where id = :id") //
 					.bind("id", old.getId()) //
 					.map(new AssessmentMapper()).first();
 
-			rv.value = Optional.ofNullable(auth);
+			rv.value = Optional.ofNullable(a);
 		});
 
 		return rv.value;
@@ -246,13 +248,13 @@ public class AssessmentDataJDBIImpl implements AssessmentData {
 	 * Create our tables if needed.
 	 */
 	protected void createTables() {
-		db.schedule(h -> {
+		this.db.schedule(h -> {
 			h.execute("create table if not exists assessment (" //
 					+ "id bigint unsigned auto_increment not null primary key," //
 					+ "subscription bigint unsigned not null," //
 					+ "context varchar (255) not null," //
-					+ "title varchar (255)," //
-					+ "atype char (1)," //
+					+ "title varchar (255) not null," //
+					+ "atype char (1) not null," //
 					+ "published tinyint not null," //
 					+ "due bigint," //
 					+ "hideUntilOpen tinyint not null," //

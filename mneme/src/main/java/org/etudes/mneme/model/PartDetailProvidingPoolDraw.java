@@ -20,48 +20,22 @@ package org.etudes.mneme.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * Password models the access password for an assessment.
+ * PartDetailProvidingPoolDraw is a part detail that adds to the part one or more randomly drawn questions from a question pool.
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
-public class Password {
+public class PartDetailProvidingPoolDraw extends PartDetail {
 
-	/** The password - clear text. */
-	protected String password = null;
-
-	/**
-	 * @param password
-	 *            The clear text password as entered.
-	 * @return if the provided password (clear text) matches the defined password for the assessment.
-	 */
-	public boolean checkPassword(String password) {
-		if (password == null)
-			return false;
-
-		return password.equals(this.password);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void setPassword(String password) {
-		// massage the password
-		if (password != null) {
-			password = password.trim();
-			if (password.length() > 255)
-				password = password.substring(0, 255);
-			if (password.length() == 0)
-				password = null;
-		}
-
-		this.password = password;
-	}
+	protected int numQuestionsToDraw = 0;
+	protected long poolId = 0l;
 
 	/**
 	 * Set as a copy of another.
@@ -70,9 +44,26 @@ public class Password {
 	 *            The other to copy.
 	 * @return this (for chaining).
 	 */
-	public Password set(Password other) {
-		this.password = other.password;
+	public PartDetailProvidingPoolDraw set(PartDetailProvidingPoolDraw other) {
+		super.set(other);
+
+		this.numQuestionsToDraw = other.getNumQuestionsToDraw();
+		this.poolId = other.getPoolId();
 
 		return this;
+	}
+
+	@Override
+	public float sumQuestionPoints() {
+
+		// TODO: we need to get the pool's question point value
+		final float poolQuestionPointValue = 0;
+
+		return poolQuestionPointValue * this.numQuestionsToDraw;
+	}
+
+	@Override
+	public int getNumQuestions() {
+		return this.numQuestionsToDraw;
 	}
 }

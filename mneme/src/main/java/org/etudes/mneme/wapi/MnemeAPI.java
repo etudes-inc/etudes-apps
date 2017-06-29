@@ -123,10 +123,9 @@ public class MnemeAPI {
 		// get the assessments
 		final long subscriptionId = authentication.get().getUser().getSubscriptionId();
 		final String context = authentication.get().getContext();
-		final boolean publishedOnly = false;
-		final AssessmentService.Sort sort = AssessmentService.Sort.title_a;
+		final boolean publishedAndValidOnly = false;
 
-		List<Assessment> rv = asmtService.getContextAssessments(subscriptionId, context, sort, publishedOnly);
+		List<Assessment> rv = asmtService.getContextAssessments(subscriptionId, context, publishedAndValidOnly);
 
 		return rv;
 	}

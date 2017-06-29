@@ -87,10 +87,10 @@ public class AssessmentServiceTest {
 		a.setTitle(title);
 		a.setType(Type.assignment);
 		a.getStatus().setPublished(true);
-		a.getSchedule().setDue(new Date(20000000l));
+		a.getSchedule().setDue(Optional.of(new Date(20000000l)));
 		a.getSchedule().setHideUntilOpen(false);
-		a.getSchedule().setOpen(new Date(10000000l));
-		a.getSchedule().setUntil(new Date(30000000l));
+		a.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a.getSchedule().setUntil(Optional.of(new Date(30000000l)));
 		// TODO: more settings
 
 		Optional<Assessment> created = service.createAssessment(sub, context, user, a);
@@ -107,7 +107,7 @@ public class AssessmentServiceTest {
 		Assertions.assertThat(created.get().getModified().getDate()).isNotNull();
 		Assertions.assertThat(created.get().getModified().getUserId()).isGreaterThan(0l);
 		Assertions.assertThat(created.get().getCreated()).isEqualTo(created.get().getModified());
-		
+
 		// make sure the thing we got back matches what we sent in (id, subscription, context, created, modified, will be set, asmt will be 'cleaned', though)
 		a.setId(created.get().getId());
 		a.setSubscription(created.get().getSubscription());
@@ -143,7 +143,7 @@ public class AssessmentServiceTest {
 		Assertions.assertThat(created.get().getModified().getDate()).isNotNull();
 		Assertions.assertThat(created.get().getModified().getUserId()).isGreaterThan(0l);
 		Assertions.assertThat(created.get().getCreated()).isEqualTo(created.get().getModified());
-		
+
 		// make sure the thing we got back matches what we sent in (id, subscription, context, created, modified, will be set, asmt will be 'cleaned', though)
 		a.setId(created.get().getId());
 		a.setSubscription(created.get().getSubscription());
@@ -185,37 +185,8 @@ public class AssessmentServiceTest {
 	}
 
 	@Test
-	public void testCreateTitleCleanupEmptyGetsNulled() {
-
-		final String title = "";
-		final String cleanedTitle = null;
-		final long sub = 1l;
-		final String context = "CLASS";
-		final long user = 22l;
-
-		// add this assessment
-		Assessment a = new Assessment();
-		a.setTitle(title);
-
-		Optional<Assessment> created = service.createAssessment(sub, context, user, a);
-
-		// make sure it got created, and we got an assessment back
-		Assertions.assertThat(created).isNotNull();
-		Assertions.assertThat(created).isPresent();
-
-		// make sure the thing we got back matches what we sent in (id, subscription, context, created, modified, will be set, asmt will be 'cleaned', though)
-		a.setId(created.get().getId());
-		a.setSubscription(created.get().getSubscription());
-		a.setContext(created.get().getContext());
-		a.getCreated().set(created.get().getCreated());
-		a.getModified().set(created.get().getModified());
-		a.setTitle(cleanedTitle);
-		Assertions.assertThat(created.get().getTitle()).isEqualTo(cleanedTitle);
-		Assertions.assertThat(created.get()).isEqualTo(a);
-	}
-
-	@Test
 	public void testListByContext() {
+		// TODO:
 	}
 
 	@Test
@@ -231,10 +202,10 @@ public class AssessmentServiceTest {
 		a.setTitle(title);
 		a.setType(Type.assignment);
 		a.getStatus().setPublished(true);
-		a.getSchedule().setDue(new Date(20000000l));
+		a.getSchedule().setDue(Optional.of(new Date(20000000l)));
 		a.getSchedule().setHideUntilOpen(false);
-		a.getSchedule().setOpen(new Date(10000000l));
-		a.getSchedule().setUntil(new Date(30000000l));
+		a.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a.getSchedule().setUntil(Optional.of(new Date(30000000l)));
 		// TODO: more settings
 
 		Optional<Assessment> created = service.createAssessment(sub, context, user, a);
@@ -263,7 +234,6 @@ public class AssessmentServiceTest {
 
 		// and that it matches
 		Assertions.assertThat(byId.get()).isEqualTo(a);
-
 	}
 
 	@Test
@@ -281,10 +251,10 @@ public class AssessmentServiceTest {
 		a.setTitle(title);
 		a.setType(Type.assignment);
 		a.getStatus().setPublished(true);
-		a.getSchedule().setDue(new Date(20000000l));
+		a.getSchedule().setDue(Optional.of(new Date(20000000l)));
 		a.getSchedule().setHideUntilOpen(false);
-		a.getSchedule().setOpen(new Date(10000000l));
-		a.getSchedule().setUntil(new Date(30000000l));
+		a.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a.getSchedule().setUntil(Optional.of(new Date(30000000l)));
 		// TODO: more settings
 
 		Optional<Assessment> created = service.createAssessment(sub, context, user, a);
@@ -326,10 +296,10 @@ public class AssessmentServiceTest {
 		// make some changes
 		toChange.get().setTitle(titleUpdated);
 		toChange.get().setType(Type.assignment);
-		toChange.get().getSchedule().setDue(new Date(25000000l));
+		toChange.get().getSchedule().setDue(Optional.of(new Date(25000000l)));
 		toChange.get().getSchedule().setHideUntilOpen(true);
-		toChange.get().getSchedule().setOpen(new Date(15000000l));
-		toChange.get().getSchedule().setUntil(new Date(35000000l));
+		toChange.get().getSchedule().setOpen(Optional.of(new Date(15000000l)));
+		toChange.get().getSchedule().setUntil(Optional.of(new Date(35000000l)));
 
 		// save
 		Optional<Assessment> updated = service.saveAssessment(user2, a, toChange.get());

@@ -98,6 +98,19 @@ public class DB {
 	}
 
 	/**
+	 * Safe way to prepare a date for writing to the database (as a mysql bigint).
+	 * 
+	 * @param d
+	 *            The date.
+	 * @return The value to write to the database.
+	 */
+	public static Long fromOptionalDate(Optional<Date> d) {
+		if (!d.isPresent())
+			return null;
+		return d.get().getTime();
+	}
+
+	/**
 	 * Read a value from the db into a Boolean.
 	 * 
 	 * @param value
@@ -132,6 +145,19 @@ public class DB {
 		if (value == 0)
 			return null;
 		return Long.valueOf(value);
+	}
+
+	/**
+	 * Read a value from the db into a Date. A 0 is null.
+	 * 
+	 * @param value
+	 *            The (Long) value.
+	 * @return The Date value.
+	 */
+	public static Optional<Date> toOptionalDate(long value) {
+		if (value == 0)
+			return Optional.empty();
+		return Optional.of(new Date(value));
 	}
 
 	/** The AutoDDL setting. */

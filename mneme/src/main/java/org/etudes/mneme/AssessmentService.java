@@ -28,13 +28,6 @@ import org.jvnet.hk2.annotations.Contract;
 public interface AssessmentService {
 
 	/**
-	 * Sort options for getContextAssessments()
-	 */
-	enum Sort {
-		cdate_a, cdate_d, ddate_a, ddate_d, odate_a, odate_d, published_a, published_d, title_a, title_d, type_a, type_d
-	}
-
-	/**
 	 * Create an assessment
 	 * 
 	 * @param subscriptionId
@@ -61,13 +54,11 @@ public interface AssessmentService {
 	 *            The subscription owning the assessments.
 	 * @param context
 	 *            The context.
-	 * @param sort
-	 *            The sort specification.
-	 * @param publishedOnly
-	 *            if only published & valid assessments should be returned, else return unpublished and invalid, too.
+	 * @param includeOnlyPublishedAndValid
+	 *            if only published & valid assessments should be returned, else return all.
 	 * @return All the assessments for the context, sorted. Does not include archived assessments. Unpublished & invalid are optionally included.
 	 */
-	List<Assessment> getContextAssessments(long subscriptionId, String context, Sort sort, Boolean publishedOnly);
+	List<Assessment> getContextAssessments(long subscriptionId, String context, boolean includeOnlyPublishedAndValid);
 
 	/**
 	 * Save the changes to this assessment.

@@ -1,9 +1,6 @@
 /**********************************************************************************
  *
- * Copyright (c) 2008, 2017 Etudes, Inc.
- * 
- * Portions completed before September 1, 2008
- * Copyright (c) 2007, 2008 The Regents of the University of Michigan & Foothill College, ETUDES Project
+ * Copyright (c) 2017 Etudes, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +18,28 @@
 
 package org.etudes.mneme;
 
-import java.util.List;
+import org.assertj.core.api.Assertions;
+import org.etudes.mneme.model.Presentation;
+import org.junit.Test;
 
-/**
- * Shuffler shuffles lists.
- */
-public interface Shuffler {
-	/**
-	 * Shuffle the source.
-	 * 
-	 * @param source
-	 *            The list to shuffle.
-	 * @param seedExtension
-	 *            An optional string to add the to root seed string to form the seed.
-	 */
-	void shuffle(List<? extends Object> source, String seedExtension);
+public class PresentationTest {
+
+	@Test
+	public void test() {
+		// what happens when we try to set null text?
+		Presentation p = new Presentation();
+		Assertions.assertThat(p.getText()).isNotNull();
+
+		try {
+			p.setText(null);
+			Assertions.fail("null allowed");
+		} catch (NullPointerException e) {
+			// System.out.println(e);
+		}
+		Assertions.assertThat(p.getText()).isNotNull();
+
+		final String text = "A presentation";
+		p.setText(text);
+		Assertions.assertThat(p.getText()).isEqualTo(text);
+	}
 }
