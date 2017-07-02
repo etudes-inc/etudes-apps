@@ -18,18 +18,16 @@
 
 package org.etudes.mneme.model;
 
-import lombok.AllArgsConstructor;
+import java.util.Optional;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
  * PartDetailProvidingPoolDraw is a part detail that adds to the part one or more randomly drawn questions from a question pool.
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 public class PartDetailProvidingPoolDraw extends PartDetail {
@@ -37,18 +35,32 @@ public class PartDetailProvidingPoolDraw extends PartDetail {
 	protected int numQuestionsToDraw = 0;
 	protected long poolId = 0l;
 
-	/**
-	 * Set as a copy of another.
-	 * 
-	 * @param other
-	 *            The other to copy.
-	 * @return this (for chaining).
-	 */
-	public PartDetailProvidingPoolDraw set(PartDetailProvidingPoolDraw other) {
+	public PartDetailProvidingPoolDraw() {
+		super();
+	}
+
+	public PartDetailProvidingPoolDraw(long id, Optional<Float> overrideSumQuestionPoints, int numQuestionsToDraw, long poolId) {
+		super(id, overrideSumQuestionPoints);
+		this.numQuestionsToDraw = numQuestionsToDraw;
+		this.poolId = poolId;
+	}
+
+	@Override
+	public int getNumQuestions() {
+		return this.numQuestionsToDraw;
+	}
+
+	@Override
+	public PartDetail set(PartDetail other) {
 		super.set(other);
 
-		this.numQuestionsToDraw = other.getNumQuestionsToDraw();
-		this.poolId = other.getPoolId();
+		if (!(other instanceof PartDetailProvidingPoolDraw)) {
+			throw new IllegalArgumentException("PartDetailProvidingPoolDraw.set expects another PartDetailProvidingPoolDraw");
+		}
+		PartDetailProvidingPoolDraw o = (PartDetailProvidingPoolDraw) other;
+
+		this.numQuestionsToDraw = o.getNumQuestionsToDraw();
+		this.poolId = o.getPoolId();
 
 		return this;
 	}
@@ -60,10 +72,5 @@ public class PartDetailProvidingPoolDraw extends PartDetail {
 		final float poolQuestionPointValue = 0;
 
 		return poolQuestionPointValue * this.numQuestionsToDraw;
-	}
-
-	@Override
-	public int getNumQuestions() {
-		return this.numQuestionsToDraw;
 	}
 }

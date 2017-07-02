@@ -20,11 +20,10 @@ package org.etudes.mneme.model;
 
 import java.util.ArrayList;
 
-import javax.validation.constraints.NotNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 /**
@@ -65,34 +64,60 @@ public class Assessment {
 	}
 
 	/** The assessment context - where it belongs in the LMS. */
-	@NotNull
+	@NonNull
 	protected String context = "";
 
-	@NotNull
+	@NonNull
 	protected Attribution created = new Attribution();
 
 	protected long id = 0l;
 
-	@NotNull
+	@NonNull
 	protected Attribution modified = new Attribution();
 
-	@NotNull
+	@NonNull
 	protected ArrayList<Part> parts = new ArrayList<>();
 
-	@NotNull
+	@NonNull
 	protected Presentation presentation = new Presentation();
 
-	@NotNull
+	@NonNull
 	protected Schedule schedule = new Schedule();
 
-	@NotNull
+	@NonNull
 	protected AssessmentStatus status = new AssessmentStatus();
 
 	protected long subscription = 0l;
 
-	@NotNull
+	@NonNull
 	protected String title = "";
 
-	@NotNull
+	@NonNull
 	protected Type type = Type.test;
+
+	/**
+	 * Set as a copy of another.
+	 * 
+	 * @param other
+	 *            The other to copy.
+	 * @return this (for chaining).
+	 */
+	public Assessment set(Assessment other) {
+		this.context = other.getContext();
+		this.created.set(other.getCreated());
+		this.id = other.getId();
+		this.modified.set(other.getModified());
+		this.parts.clear();
+		for (Part p : other.getParts()) {
+			this.parts.add(new Part().set(p));
+		}
+		this.presentation.set(other.getPresentation());
+		this.schedule.set(other.getSchedule());
+		this.status.set(other.getStatus());
+		this.subscription = other.getSubscription();
+		this.title = other.getTitle();
+		this.type = other.getType();
+
+		return this;
+	}
 }

@@ -24,6 +24,7 @@ import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 /**
@@ -36,15 +37,18 @@ import lombok.experimental.Accessors;
 public class Schedule {
 
 	/** The due date. Submissions after this date are considered late, if they are accepted at all. */
+	@NonNull
 	protected Optional<Date> due = Optional.empty();
 
 	/** If the assessment should be hidden from students until open. */
 	protected boolean hideUntilOpen = false;
 
 	/** The open date. Only after this date (if defined) is the assessment open for submission. If not defined, it is open when published. */
+	@NonNull
 	protected Optional<Date> open = Optional.empty();
 
 	/** The date after which submissions will not be accepted - if empty, submissions will be accepted while published. */
+	@NonNull
 	protected Optional<Date> until = Optional.empty();
 
 	/**

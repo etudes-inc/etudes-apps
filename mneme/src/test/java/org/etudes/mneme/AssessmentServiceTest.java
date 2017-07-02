@@ -41,7 +41,7 @@ import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
 
 /**
- * Test the AssessmentService impl
+ * Test the AssessmentService
  */
 public class AssessmentServiceTest {
 
@@ -75,9 +75,10 @@ public class AssessmentServiceTest {
 	}
 
 	@Test
-	public void testCreate() {
+	public void testCleanupTitleGetsTrimmed() {
 
-		final String title = "TITLE";
+		final String title = "     Title needing to be trimmed      ";
+		final String cleanedTitle = title.trim();
 		final long sub = 1l;
 		final String context = "CLASS";
 		final long user = 22l;
@@ -85,13 +86,6 @@ public class AssessmentServiceTest {
 		// add this assessment
 		Assessment a = new Assessment();
 		a.setTitle(title);
-		a.setType(Type.assignment);
-		a.getStatus().setPublished(true);
-		a.getSchedule().setDue(Optional.of(new Date(20000000l)));
-		a.getSchedule().setHideUntilOpen(false);
-		a.getSchedule().setOpen(Optional.of(new Date(10000000l)));
-		a.getSchedule().setUntil(Optional.of(new Date(30000000l)));
-		// TODO: more settings
 
 		Optional<Assessment> created = service.createAssessment(sub, context, user, a);
 
@@ -99,35 +93,29 @@ public class AssessmentServiceTest {
 		Assertions.assertThat(created).isNotNull();
 		Assertions.assertThat(created).isPresent();
 
-		// make sure the attributions were set, and equal
-		Assertions.assertThat(created.get().getCreated()).isNotNull();
-		Assertions.assertThat(created.get().getCreated().getDate()).isNotNull();
-		Assertions.assertThat(created.get().getCreated().getUserId()).isGreaterThan(0l);
-		Assertions.assertThat(created.get().getModified()).isNotNull();
-		Assertions.assertThat(created.get().getModified().getDate()).isNotNull();
-		Assertions.assertThat(created.get().getModified().getUserId()).isGreaterThan(0l);
-		Assertions.assertThat(created.get().getCreated()).isEqualTo(created.get().getModified());
-
 		// make sure the thing we got back matches what we sent in (id, subscription, context, created, modified, will be set, asmt will be 'cleaned', though)
 		a.setId(created.get().getId());
 		a.setSubscription(created.get().getSubscription());
 		a.setContext(created.get().getContext());
 		a.getCreated().set(created.get().getCreated());
 		a.getModified().set(created.get().getModified());
-		Assertions.assertThat(created.get().getId()).isPositive();
-		Assertions.assertThat(created.get().getTitle()).isEqualTo(title);
+		a.setTitle(cleanedTitle);
+		Assertions.assertThat(created.get().getTitle()).isEqualTo(cleanedTitle);
 		Assertions.assertThat(created.get()).isEqualTo(a);
 	}
 
 	@Test
-	public void testCreateMinimal() {
+	public void testCleanupTitleGetsTrimmedToBlank() {
 
+		final String title = "                  ";
+		final String cleanedTitle = title.trim();
 		final long sub = 1l;
 		final String context = "CLASS";
 		final long user = 22l;
 
 		// add this assessment
 		Assessment a = new Assessment();
+		a.setTitle(title);
 
 		Optional<Assessment> created = service.createAssessment(sub, context, user, a);
 
@@ -135,27 +123,19 @@ public class AssessmentServiceTest {
 		Assertions.assertThat(created).isNotNull();
 		Assertions.assertThat(created).isPresent();
 
-		// make sure the attributions were set, and equal
-		Assertions.assertThat(created.get().getCreated()).isNotNull();
-		Assertions.assertThat(created.get().getCreated().getDate()).isNotNull();
-		Assertions.assertThat(created.get().getCreated().getUserId()).isGreaterThan(0l);
-		Assertions.assertThat(created.get().getModified()).isNotNull();
-		Assertions.assertThat(created.get().getModified().getDate()).isNotNull();
-		Assertions.assertThat(created.get().getModified().getUserId()).isGreaterThan(0l);
-		Assertions.assertThat(created.get().getCreated()).isEqualTo(created.get().getModified());
-
 		// make sure the thing we got back matches what we sent in (id, subscription, context, created, modified, will be set, asmt will be 'cleaned', though)
 		a.setId(created.get().getId());
 		a.setSubscription(created.get().getSubscription());
 		a.setContext(created.get().getContext());
 		a.getCreated().set(created.get().getCreated());
 		a.getModified().set(created.get().getModified());
-		Assertions.assertThat(created.get().getId()).isPositive();
+		a.setTitle(cleanedTitle);
+		Assertions.assertThat(created.get().getTitle()).isEqualTo(cleanedTitle);
 		Assertions.assertThat(created.get()).isEqualTo(a);
 	}
 
 	@Test
-	public void testCreateTitleCleanupTooLongGetsTrimmedTo255() {
+	public void testCleanupTitleTooLongGetsTrimmedTo255() {
 
 		final String title = RandomStringUtils.randomAlphanumeric(260);
 		final String cleanedTitle = title.substring(0, 255);
@@ -185,12 +165,89 @@ public class AssessmentServiceTest {
 	}
 
 	@Test
-	public void testListByContext() {
-		// TODO:
+	public void testCreateAssessmentWithFullProperties() {
+
+		final String title = "TITLE";
+		final String presentationText = "PRESENTATION";
+		final long sub = 1l;
+		final String context = "CLASS";
+		final long user = 22l;
+
+		// add this assessment
+		Assessment a = new Assessment();
+		a.setTitle(title);
+		a.setType(Type.assignment);
+		a.getStatus().setPublished(true);
+		a.getSchedule().setDue(Optional.of(new Date(20000000l)));
+		a.getSchedule().setHideUntilOpen(false);
+		a.getSchedule().setOpen(Optional.of(new Date(10000000l)));
+		a.getSchedule().setUntil(Optional.of(new Date(30000000l)));
+		a.getPresentation().setText(presentationText);
+		// TODO: more settings
+
+		Optional<Assessment> created = service.createAssessment(sub, context, user, a);
+
+		// make sure it got created, and we got an assessment back
+		Assertions.assertThat(created).isNotNull();
+		Assertions.assertThat(created).isPresent();
+
+		// make sure the attributions were set, and equal
+		Assertions.assertThat(created.get().getCreated()).isNotNull();
+		Assertions.assertThat(created.get().getCreated().getDate()).isNotNull();
+		Assertions.assertThat(created.get().getCreated().getUserId()).isGreaterThan(0l);
+		Assertions.assertThat(created.get().getModified()).isNotNull();
+		Assertions.assertThat(created.get().getModified().getDate()).isNotNull();
+		Assertions.assertThat(created.get().getModified().getUserId()).isGreaterThan(0l);
+		Assertions.assertThat(created.get().getCreated()).isEqualTo(created.get().getModified());
+
+		// make sure the thing we got back matches what we sent in (id, subscription, context, created, modified, will be set, asmt will be 'cleaned', though)
+		a.setId(created.get().getId());
+		a.setSubscription(created.get().getSubscription());
+		a.setContext(created.get().getContext());
+		a.getCreated().set(created.get().getCreated());
+		a.getModified().set(created.get().getModified());
+		Assertions.assertThat(created.get().getId()).isPositive();
+		Assertions.assertThat(created.get().getTitle()).isEqualTo(title);
+		Assertions.assertThat(created.get()).isEqualTo(a);
 	}
 
 	@Test
-	public void testGetById() {
+	public void testCreateAssessmentWithMinimalProperties() {
+
+		final long sub = 1l;
+		final String context = "CLASS";
+		final long user = 22l;
+
+		// add this assessment
+		Assessment a = new Assessment();
+
+		Optional<Assessment> created = service.createAssessment(sub, context, user, a);
+
+		// make sure it got created, and we got an assessment back
+		Assertions.assertThat(created).isNotNull();
+		Assertions.assertThat(created).isPresent();
+
+		// make sure the attributions were set, and equal
+		Assertions.assertThat(created.get().getCreated()).isNotNull();
+		Assertions.assertThat(created.get().getCreated().getDate()).isNotNull();
+		Assertions.assertThat(created.get().getCreated().getUserId()).isGreaterThan(0l);
+		Assertions.assertThat(created.get().getModified()).isNotNull();
+		Assertions.assertThat(created.get().getModified().getDate()).isNotNull();
+		Assertions.assertThat(created.get().getModified().getUserId()).isGreaterThan(0l);
+		Assertions.assertThat(created.get().getCreated()).isEqualTo(created.get().getModified());
+
+		// make sure the thing we got back matches what we sent in (id, subscription, context, created, modified, will be set, asmt will be 'cleaned', though)
+		a.setId(created.get().getId());
+		a.setSubscription(created.get().getSubscription());
+		a.setContext(created.get().getContext());
+		a.getCreated().set(created.get().getCreated());
+		a.getModified().set(created.get().getModified());
+		Assertions.assertThat(created.get().getId()).isPositive();
+		Assertions.assertThat(created.get()).isEqualTo(a);
+	}
+
+	@Test
+	public void testGetAssessmentById() {
 
 		final String title = "TITLE";
 		final long sub = 1l;
@@ -237,7 +294,12 @@ public class AssessmentServiceTest {
 	}
 
 	@Test
-	public void testSave() {
+	public void testListAssessmentsByContext() {
+		// TODO:
+	}
+
+	@Test
+	public void testSaveAssessment() {
 
 		final String title = "TITLE";
 		final String titleUpdated = "This is the new title";

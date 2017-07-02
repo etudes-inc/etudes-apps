@@ -24,6 +24,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 /**
@@ -35,10 +36,16 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Part {
 
-	protected String id = null;
+	@NonNull
+	protected List<PartDetail> details = new ArrayList<PartDetail>();
+
+	protected long id = 0l;
+
+	@NonNull
 	protected Presentation presentation = new Presentation();
-	protected String title = null;
-	List<PartDetail> details = new ArrayList<PartDetail>();
+
+	@NonNull
+	protected String title = "";
 
 	/**
 	 * Set as a copy of another.
@@ -48,9 +55,9 @@ public class Part {
 	 * @return this (for chaining).
 	 */
 	public Part set(Part other) {
-		this.id = other.id;
-		this.presentation.set(other.presentation);
-		this.title = other.title;
+		this.id = other.getId();
+		this.presentation.set(other.getPresentation());
+		this.title = other.getTitle();
 
 		this.details.clear();
 		try {

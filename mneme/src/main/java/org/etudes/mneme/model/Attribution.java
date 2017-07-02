@@ -20,11 +20,10 @@ package org.etudes.mneme.model;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotNull;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 /**
@@ -36,8 +35,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Attribution {
 
-	@NotNull
-	protected Date date = null;
+	@NonNull
+	protected Date date = new Date();
+
 	protected long userId = 0l;
 
 	/**

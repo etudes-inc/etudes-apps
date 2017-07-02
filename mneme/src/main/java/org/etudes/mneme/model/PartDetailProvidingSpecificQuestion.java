@@ -18,23 +18,30 @@
 
 package org.etudes.mneme.model;
 
-import lombok.AllArgsConstructor;
+import java.util.Optional;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
  * PartDetailProvidingSpecificQuestion is a part detail that adds a single, specific question to the part.
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
 public class PartDetailProvidingSpecificQuestion extends PartDetail {
 
 	protected long questionId = 0l;
+
+	public PartDetailProvidingSpecificQuestion() {
+		super();
+	}
+
+	public PartDetailProvidingSpecificQuestion(long id, Optional<Float> overrideSumQuestionPoints, long questionId) {
+		super(id, overrideSumQuestionPoints);
+		this.questionId = questionId;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -43,17 +50,16 @@ public class PartDetailProvidingSpecificQuestion extends PartDetail {
 		return 1;
 	}
 
-	/**
-	 * Set as a copy of another.
-	 * 
-	 * @param other
-	 *            The other to copy.
-	 * @return this (for chaining).
-	 */
-	public PartDetailProvidingSpecificQuestion set(PartDetailProvidingSpecificQuestion other) {
+	@Override
+	public PartDetail set(PartDetail other) {
 		super.set(other);
-		
-		this.questionId = other.getQuestionId();
+
+		if (!(other instanceof PartDetailProvidingSpecificQuestion)) {
+			throw new IllegalArgumentException("PartDetailProvidingSpecificQuestion.set expects another PartDetailProvidingSpecificQuestion");
+		}
+		PartDetailProvidingSpecificQuestion o = (PartDetailProvidingSpecificQuestion) other;
+
+		this.questionId = o.getQuestionId();
 
 		return this;
 	}

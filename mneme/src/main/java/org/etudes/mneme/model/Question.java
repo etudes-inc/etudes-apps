@@ -20,10 +20,11 @@ package org.etudes.mneme.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 /**
- * Question models questions.
+ * Question models assessment questions.
  */
 @Data
 @NoArgsConstructor
@@ -31,6 +32,56 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Question {
 
-	/** The question id. 0 indicates not yet set. */
+	/**
+	 * Type enumerates the different assessment types.
+	 */
+	public enum Type {
+		multipleChoice("M"), trueFalse("T");
+
+		public static Type fromCode(String code) {
+			for (Type t : Type.values()) {
+				if (t.getCode().equalsIgnoreCase(code)) {
+					return t;
+				}
+			}
+
+			return trueFalse;
+		}
+
+		/** Defines the codes to use to reconstruct the types (for example, from a db). */
+		private final String code;
+
+		private Type(String code) {
+			this.code = code;
+		}
+
+		public String getCode() {
+			return this.code;
+		}
+	}
+
 	protected long id = 0l;
+
+	@NonNull
+	protected Presentation presentation = new Presentation();
+
+	@NonNull
+	protected Type type = Type.trueFalse;
+
+	/**
+	 * 
+	 * Set as a copy of another.
+	 * 
+	 * @param other
+	 *            The other to copy.
+	 * @return this (for chaining).
+	 */
+	public Question set(Question other) {
+		this.id = other.getId();
+		this.presentation.set(other.getPresentation());
+		this.type = other.getType();
+
+		return this;
+	}
+
 }

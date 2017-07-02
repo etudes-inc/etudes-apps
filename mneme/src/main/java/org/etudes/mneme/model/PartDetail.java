@@ -18,9 +18,12 @@
 
 package org.etudes.mneme.model;
 
+import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.experimental.Accessors;
 
 /**
@@ -35,7 +38,8 @@ public abstract class PartDetail implements Cloneable {
 	protected long id = 0l;
 
 	/** Points override total value for all the questions in the part detail. If not set, the individual question points are used. */
-	protected Float overrideSumQuestionPoints = null;
+	@NonNull
+	protected Optional<Float> overrideSumQuestionPoints = Optional.empty();
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
@@ -43,14 +47,15 @@ public abstract class PartDetail implements Cloneable {
 	}
 
 	/**
-	 * @return The total points for the part detail, or 0 if there are no points.
+	 * @return The number of questions this part detail adds to the part.
+	 */
+	abstract public int getNumQuestions();
+
+	/**
+	 * @return The total points for the part detail, TODO: or 0 if there are no points.
 	 */
 	public float getTotalPoints() {
-		if (overrideSumQuestionPoints != null) {
-			return overrideSumQuestionPoints;
-		}
-
-		return sumQuestionPoints();
+		return overrideSumQuestionPoints.orElse(sumQuestionPoints());
 	}
 
 	/**
@@ -61,30 +66,28 @@ public abstract class PartDetail implements Cloneable {
 	 */
 	public void setEffectivePoints(float points) {
 		if (points == sumQuestionPoints()) {
-			setOverrideSumQuestionPoints(null);
+			setOverrideSumQuestionPoints(Optional.empty());
 		} else {
-			setOverrideSumQuestionPoints(points);
+			setOverrideSumQuestionPoints(Optional.of(points));
 		}
 	}
+
+	/**
+	 * @return The total point value sum of each individual question in the part detail.
+	 */
+	abstract public float sumQuestionPoints();
 
 	/**
 	 * Set as a copy of another.
 	 * 
 	 * @param other
 	 *            The other to copy.
+	 * @return this (for chaining).
 	 */
-	protected void set(PartDetail other) {
+	protected PartDetail set(PartDetail other) {
 		this.id = other.getId();
 		this.overrideSumQuestionPoints = other.getOverrideSumQuestionPoints();
+
+		return this;
 	}
-
-	/**
-	 * @return The number of questions this part detail adds to the part.
-	 */
-	abstract public int getNumQuestions();
-
-	/**
-	 * @return The total point value sum of each individual question in the part detail.
-	 */
-	abstract public float sumQuestionPoints();
 }

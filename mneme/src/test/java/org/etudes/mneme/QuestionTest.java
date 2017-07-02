@@ -20,47 +20,41 @@ package org.etudes.mneme;
 
 import org.assertj.core.api.Assertions;
 import org.etudes.mneme.model.Presentation;
+import org.etudes.mneme.model.Question;
+import org.etudes.mneme.model.Question.Type;
 import org.junit.Test;
 
-public class PresentationTest {
+public class QuestionTest {
+
+	protected final String presentationText = "Presentation";
 
 	@Test
-	public void test_isEmpty() {
-		Presentation p = new Presentation();
-		Assertions.assertThat(p.isEmpty()).isTrue();
+	public void test_nullsNotAllowed() {
+		Question q = new Question();
+		Assertions.assertThat(q.getPresentation()).isNotNull();
+		Assertions.assertThat(q.getType()).isNotNull();
 
-		final String text = "This is presentation text";
-		p.setText(text);
-		Assertions.assertThat(p.isEmpty()).isFalse();
-		Assertions.assertThat(p.getText()).isEqualTo(text);
+		try {
+			q.setPresentation(null);
+			Assertions.fail("null allowed");
+		} catch (NullPointerException e) {
+		}
+		Assertions.assertThat(q.getPresentation()).isNotNull();
+
+		try {
+			q.setType(null);
+			Assertions.fail("null allowed");
+		} catch (NullPointerException e) {
+		}
+		Assertions.assertThat(q.getType()).isNotNull();
 	}
 
 	@Test
 	public void test_set() {
-		final String text = "Some Text";
-		Presentation p = new Presentation(text);
+		Question q = new Question(1l, new Presentation(presentationText), Type.multipleChoice);
 
-		Presentation p2 = new Presentation().set(p);
-		Assertions.assertThat(p2).isNotNull();
-		Assertions.assertThat(p).isEqualTo(p2);
-	}
-
-	@Test
-	public void test_setText_nullNotAllowed() {
-		// what happens when we try to set null text?
-		Presentation p = new Presentation();
-		Assertions.assertThat(p.getText()).isNotNull();
-
-		try {
-			p.setText(null);
-			Assertions.fail("null allowed");
-		} catch (NullPointerException e) {
-			// System.out.println(e);
-		}
-		Assertions.assertThat(p.getText()).isNotNull();
-
-		final String text = "A presentation";
-		p.setText(text);
-		Assertions.assertThat(p.getText()).isEqualTo(text);
+		Question q2 = new Question().set(q);
+		Assertions.assertThat(q2).isNotNull();
+		Assertions.assertThat(q).isEqualTo(q2);
 	}
 }

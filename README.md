@@ -26,5 +26,3 @@ cd etudes-apps && mvn clean install && cd ..
 Run
 
 java -jar etudes-apps/framework/target/framework-latest.jar server etudes-apps/framework/config.yml
-
-

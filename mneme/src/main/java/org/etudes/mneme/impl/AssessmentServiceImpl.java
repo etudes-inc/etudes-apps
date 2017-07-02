@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 
 import org.etudes.mneme.AssessmentService;
 import org.etudes.mneme.data.AssessmentData;
@@ -34,11 +33,13 @@ import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import lombok.NonNull;
+
 @Service
 public class AssessmentServiceImpl implements AssessmentService {
 	final static private Logger logger = LoggerFactory.getLogger(AssessmentServiceImpl.class);
 
-	@NotNull
+	@NonNull
 	final protected AssessmentData data;
 
 	/**
