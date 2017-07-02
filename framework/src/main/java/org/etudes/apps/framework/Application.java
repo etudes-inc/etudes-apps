@@ -98,9 +98,10 @@ public class Application extends io.dropwizard.Application<Configuration> {
 		bootstrap.setConfigurationSourceProvider(
 				new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(), new EnvironmentVariableSubstitutor(false)));
 
-		// serve our static assets from /, serving "index.html" as the default
+		// serve our static assets from /mneme/, serving "index.html" as the default
 		// all possible route starting points needs to be listed
 		bootstrap.addBundle(new AssetsBundle("/mneme/", "/Asmts", "index.html", "MnemeAsmts"));
+		bootstrap.addBundle(new AssetsBundle("/mneme/", "/Student", "index.html", "MnemeStudent"));
 		bootstrap.addBundle(new AssetsBundle("/mneme/", "/", "index.html", "MnemeRoot"));
 	}
 

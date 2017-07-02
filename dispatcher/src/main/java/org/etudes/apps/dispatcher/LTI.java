@@ -185,8 +185,11 @@ public class LTI {
 		// the root URL for the product
 		String productUrl = "/";
 
-		// select a starting route for the user role
+		// TODO: select a starting route for the user role
 		String route = "Asmts";
+		if (role.equals(LTIRole.student)) {
+			route = "Student";
+		}
 
 		// use the authentication id as the token
 		Long token = auth.get().get_id();
