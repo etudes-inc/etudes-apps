@@ -48,6 +48,8 @@ public class AuthAPI {
 	class AuthInfo {
 		String givenName;
 		String familyName;
+		String context;
+		String placement;
 	}
 
 	final static private Logger logger = LoggerFactory.getLogger(AuthAPI.class);
@@ -81,6 +83,9 @@ public class AuthAPI {
 		AuthInfo rv = new AuthInfo();
 		rv.givenName = user.getGivenName();
 		rv.familyName = user.getFamilyName();
+
+		rv.context = authentication.get().getContext();
+		rv.placement = authentication.get().getPlacement();
 
 		return rv;
 	}
