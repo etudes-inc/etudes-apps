@@ -18,8 +18,10 @@
 
 package org.etudes.apps.dispatcher;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -118,6 +120,10 @@ public class LTI {
 			@FormParam("context_id") String context_id, //
 			@FormParam("resource_link_id") String resource_link_id, //
 			@FormParam("user_id") String user_id, //
+
+			@FormParam("ext_content_return_types") String ext_content_return_types, //
+			@FormParam("ext_content_return_url") String ext_content_return_url, //
+
 			@CookieParam(TOKEN) Long authenticationToken, @HeaderParam("user-agent") String userAgent, //
 			@Context HttpServletRequest req) {
 
@@ -193,6 +199,23 @@ public class LTI {
 
 		// use the authentication id as the token
 		Long token = auth.get().get_id();
+
+		// TODO: experiment for items
+		if ("lti_launch_url".equals(ext_content_return_types)) {
+			try {
+				// TODO: return a redirect
+				String linkUrl = "http://localhost:8080/api/lti/launch/301";
+				String encodedLinkUrl = URLEncoder.encode(linkUrl, "UTF-8");
+				// throws UnsupportedEncodingException
+				String redirect = ext_content_return_url + "?" + "return_type=lti_launch_url&url=" + encodedLinkUrl + "&text=MNEME&title=mneme";
+
+				return redirect(redirect, Optional.empty());
+			} catch (UnsupportedEncodingException e) {
+				logInfo("lti_launch_url: encoding error", product, oauth_consumer_key, String.join(":", contexts), resource_link_id, req.getRemoteAddr(),
+						userAgent, String.join(":", userIds), roles, Optional.of(postBody));
+				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+			}
+		}
 
 		// TODO: from config instead of from req?
 		return redirect(req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + productUrl + route, Optional.of(token));
